@@ -1,0 +1,138 @@
+ASSESSMENT FEATURE DOCUMENTATION
+============================
+
+1. Backend APIs
+--------------
+Base URL: https://api.wildfit-coach.com/v1
+
+a) Get All Assessments:
+   - Endpoint: /assessments
+   - Method: GET
+   - Authentication: Required
+   - Response: List of user assessments
+
+b) Get Assessment by ID:
+   - Endpoint: /assessments/{id}
+   - Method: GET
+   - Authentication: Required
+   - Response: Single user assessment details
+
+c) Create Assessment:
+   - Endpoint: /assessments
+   - Method: POST
+   - Authentication: Required
+   - Request Body: Assessment data model
+
+d) Update Assessment:
+   - Endpoint: /assessments/{id}
+   - Method: PUT
+   - Authentication: Required
+   - Request Body: Updated assessment data model
+
+e) Delete Assessment:
+   - Endpoint: /assessments/{id}
+   - Method: DELETE
+   - Authentication: Required
+
+2. Data Models
+-------------
+
+a) UserAssessment:
+   - id (String, optional for creation)
+   - name (String)
+   - vitalSigns (VitalSigns)
+   - bodyMeasurements (BodyMeasurements)
+   - cardioFitness (CardioFitness)
+   - muscularEndurance (MuscularEndurance)
+   - flexibilityTests (FlexibilityTests)
+   - createdAt (DateTime)
+   - updatedAt (DateTime)
+
+b) VitalSigns:
+   - restingHeartRate (int)
+   - bloodPressureSystolic (int)
+   - bloodPressureDiastolic (int)
+   - bodyTemperature (double)
+   - respiratoryRate (int)
+   - oxygenSaturation (double)
+
+c) BodyMeasurements:
+   - height (double)
+   - weight (double)
+   - chest (double)
+   - waist (double)
+   - hips (double)
+   - arms (double)
+   - thighs (double)
+   - calves (double)
+   - bodyFatPercentage (double)
+   - muscleMass (double)
+   - neck (double)
+   - forearm (double)
+   - midThigh (double)
+
+d) MuscularEndurance:
+   - pushUps (int)
+   - pushUpType (String)
+   - squats (int)
+   - squatType (String)
+   - pullUps (int)
+
+e) FlexibilityTests:
+   - quadriceps (bool)
+   - hamstring (bool)
+   - hipFlexors (bool)
+   - shoulderMobility (bool)
+   - sitAndReach (bool)
+
+3. Assessment Types
+------------------
+- bloodPressure
+- cardioFitness
+- muscularFlexibility
+- detailedMeasurements
+
+4. State Management
+------------------
+States:
+- AssessmentInitial
+- AssessmentLoading
+- AssessmentsLoaded (List<UserAssessment>)
+- AssessmentLoaded (Single UserAssessment)
+- AssessmentCreated
+- AssessmentUpdated
+- AssessmentDeleted
+- AssessmentError (String message)
+
+Events:
+- LoadAssessments
+- LoadAssessmentById (String id)
+- CreateAssessment (UserAssessment)
+- UpdateAssessmentEvent (UserAssessment)
+- DeleteAssessmentEvent (String id)
+
+5. Error Handling
+----------------
+- UnauthorizedException: Authentication issues
+- BadRequestException: Invalid data
+- ServerException: Server-side errors
+- NetworkException: Connection issues
+- ValidationException: Data validation errors
+
+6. Data Validation Rules
+-----------------------
+- ID: Auto-generated if not provided
+- Name: Required field
+- Vital Signs: All fields required
+- Body Measurements: All fields required
+- Muscular Endurance: All fields required
+- Flexibility Tests: All fields required
+- Dates: Auto-generated for creation and updates
+
+7. Dependencies
+--------------
+- dio: HTTP client
+- json_annotation: JSON serialization
+- equatable: Value equality
+- flutter_bloc: State management
+- get_it: Dependency injection

@@ -1,0 +1,151 @@
+DASHBOARD FEATURE DOCUMENTATION
+===========================
+
+1. Backend APIs
+--------------
+Base URL: https://api.wildfit-coach.com/v1
+
+a) Main Dashboard Data:
+   - Endpoint: /dashboard
+   - Method: GET
+   - Authentication: Required
+   - Response: Complete dashboard data including stats, members, activities, and upcoming sessions
+
+b) Members List:
+   - Endpoint: /members
+   - Method: GET
+   - Authentication: Required
+   - Response: List of dashboard members
+
+c) Member Details:
+   - Endpoint: /members/{memberId}
+   - Method: GET
+   - Authentication: Required
+   - Response: Detailed information about a specific member
+
+2. Data Models
+-------------
+
+a) DashboardStats:
+   - activeClients (int)
+   - assessments (int)
+   - todaySessions (int)
+   - clientProgress (int)
+
+b) DashboardMember:
+   - id (String)
+   - name (String)
+   - avatar (String)
+   - plan (String)
+   - progress (int)
+   - nextSession (String)
+   - streakDays (int)
+   - lastActivity (String)
+   - activityTime (String)
+   - email (String)
+   - joinedAt (DateTime)
+   - height (double)
+   - weight (double)
+   - bodyFat (double)
+   - muscleMass (double)
+   - bmi (double)
+   - lastAssessment (DateTime)
+   - trainerName (String)
+   - membershipExpiry (DateTime)
+   - lastCheckin (DateTime)
+   - daysPresent (int)
+   - weeklyWorkoutGoal (int)
+   - measurements (Map<String, double>)
+
+c) DashboardActivity:
+   - id (String)
+   - memberId (String)
+   - memberName (String)
+   - type (String)
+   - title (String)
+   - description (String)
+   - time (String)
+   - icon (String)
+
+d) UpcomingSession:
+   - id (String)
+   - time (String)
+   - title (String)
+   - subtitle (String)
+   - memberId (String, optional)
+   - type (String)
+
+3. Member Statistics
+-------------------
+
+a) Body Measurements:
+   - weight (double)
+   - height (double)
+   - chest (double)
+   - waist (double)
+   - hips (double)
+   - arms (double)
+   - thighs (double)
+   - calves (double)
+   - bodyFatPercentage (double)
+   - muscleMass (double)
+
+b) Workout Progress:
+   - date (DateTime)
+   - workoutId (String)
+   - workoutName (String)
+   - completedSets (int)
+   - totalSets (int)
+   - weights (Map<String, double>)
+   - duration (int)
+   - caloriesBurned (double)
+
+c) Nutrition Progress:
+   - date (DateTime)
+   - totalCalories (int)
+   - macros (Map<String, double>)
+   - waterIntake (int)
+   - supplements (List<String>)
+   - followedPlan (bool)
+
+d) Vital Signs:
+   - restingHeartRate (int)
+   - bloodPressureSystolic (int)
+   - bloodPressureDiastolic (int)
+   - bodyTemperature (double)
+   - respiratoryRate (int)
+   - oxygenSaturation (double)
+
+4. Exercise Data
+---------------
+- name (String)
+- sets (int)
+- reps (int)
+- weight (String, optional)
+- notes (String, optional)
+
+5. Assessment Types
+------------------
+- bloodPressure
+- cardioFitness
+- muscularFlexibility
+- detailedMeasurements
+
+6. UI Components
+---------------
+- Quick Actions Section
+- Quick Stats Section
+- Active Members Section
+- Today's Activity Timeline
+- Upcoming Sessions Section
+- Floating Action Button
+- Error State
+- Loading State
+- Empty State
+
+7. Data Refresh
+--------------
+- Automatic data loading on screen load
+- Manual refresh option via pull-to-refresh
+- Error handling with retry option
+- Fallback to local data during development

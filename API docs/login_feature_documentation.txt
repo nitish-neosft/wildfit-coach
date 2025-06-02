@@ -1,0 +1,74 @@
+LOGIN FEATURE DOCUMENTATION
+=======================
+
+1. Required Fields
+-----------------
+a) Email Field:
+   - Type: String
+   - Validation:
+     * Cannot be empty
+     * Must contain '@' symbol
+     * Used for authentication
+
+b) Password Field:
+   - Type: String
+   - Validation:
+     * Cannot be empty
+     * Minimum 6 characters
+     * Used for authentication
+
+2. Backend APIs
+--------------
+Base URL: https://api.wildfit-coach.com/v1
+
+a) Login Endpoint:
+   - Path: /auth/login
+   - Method: POST
+   - Authentication Required: No
+   - Request Body:
+     {
+       "email": string,
+       "password": string
+     }
+   - Response: User object
+   - Error Handling:
+     * Throws UnauthorizedException for invalid credentials
+
+b) Token Refresh Endpoint:
+   - Path: /auth/refresh
+   - Method: POST
+   - Authentication Required: Yes (Bearer Token)
+   - Response: Updated User object
+   - Error Handling:
+     * Throws UnauthorizedException for failed token refresh
+
+3. Authentication Flow
+---------------------
+1. User enters email and password
+2. Client validates input fields
+3. Login request is sent to /auth/login
+4. On successful login:
+   - User object is returned
+   - Token is stored securely using FlutterSecureStorage
+5. For subsequent requests:
+   - Token is automatically added to request headers
+   - If 401 status is received, token refresh is attempted
+
+4. Security Features
+------------------
+- Secure token storage using FlutterSecureStorage
+- Automatic token management in API client
+- Password field has visibility toggle
+- API timeouts set to 30 seconds
+- HTTPS communication
+- Token-based authentication system
+
+5. UI Components
+--------------
+- Email input field with email icon
+- Password input field with visibility toggle
+- "Forgot Password?" link
+- Login button
+- Loading state indicator
+- Error message display
+- Animation effects for form appearance

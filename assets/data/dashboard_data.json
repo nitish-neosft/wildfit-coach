@@ -1,0 +1,157 @@
+{
+  "stats": {
+    "active_clients": 24,
+    "assessments": 7,
+    "today_sessions": 5,
+    "client_progress": 85
+  },
+  "members": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "avatar": "https://i.pravatar.cc/150?img=3",
+      "plan": "Premium",
+      "progress": 75,
+      "next_session": "10:00 AM",
+      "streak_days": 15,
+      "last_activity": "Completed Strength Training",
+      "activity_time": "2 hours ago",
+      "email": "john.doe@example.com",
+      "joined_at": "2024-01-15T10:00:00Z",
+      "height": 175.0,
+      "weight": 70.5,
+      "body_fat": 15.5,
+      "muscle_mass": 58.2,
+      "bmi": 23.0,
+      "last_assessment": "2024-02-15T14:30:00Z",
+      "trainer_name": "Sarah Wilson",
+      "membership_expiry": "2024-12-31T23:59:59Z",
+      "last_checkin": "2024-02-20T08:30:00Z",
+      "days_present": 45,
+      "weekly_workout_goal": 4,
+      "measurements": {
+        "chest": 95.0,
+        "waist": 82.0,
+        "hips": 92.0,
+        "arms": 32.0
+      }
+    },
+    {
+      "id": "2",
+      "name": "Sarah Wilson",
+      "avatar": "https://i.pravatar.cc/150?img=5",
+      "plan": "Basic",
+      "progress": 60,
+      "next_session": "2:30 PM",
+      "streak_days": 8,
+      "last_activity": "Completed HIIT Session",
+      "activity_time": "4 hours ago",
+      "email": "sarah.w@example.com",
+      "joined_at": "2024-02-01T09:00:00Z",
+      "height": 165.0,
+      "weight": 58.5,
+      "body_fat": 22.0,
+      "muscle_mass": 42.8,
+      "bmi": 21.5,
+      "last_assessment": "2024-02-10T11:00:00Z",
+      "trainer_name": "Mike Johnson",
+      "membership_expiry": "2024-08-31T23:59:59Z",
+      "last_checkin": "2024-02-20T09:15:00Z",
+      "days_present": 15,
+      "weekly_workout_goal": 3,
+      "measurements": {
+        "chest": 88.0,
+        "waist": 70.0,
+        "hips": 89.0,
+        "arms": 28.0
+      }
+    },
+    {
+      "id": "3",
+      "name": "Mike Johnson",
+      "avatar": "https://i.pravatar.cc/150?img=7",
+      "plan": "Premium",
+      "progress": 90,
+      "next_session": "11:30 AM",
+      "streak_days": 21,
+      "last_activity": "Updated Nutrition Plan",
+      "activity_time": "1 hour ago",
+      "email": "mike.j@example.com",
+      "joined_at": "2023-12-01T14:00:00Z",
+      "height": 182.0,
+      "weight": 78.5,
+      "body_fat": 12.0,
+      "muscle_mass": 65.5,
+      "bmi": 23.7,
+      "last_assessment": "2024-02-18T16:00:00Z",
+      "trainer_name": "John Doe",
+      "membership_expiry": "2024-11-30T23:59:59Z",
+      "last_checkin": "2024-02-20T07:45:00Z",
+      "days_present": 65,
+      "weekly_workout_goal": 5,
+      "measurements": {
+        "chest": 102.0,
+        "waist": 84.0,
+        "hips": 95.0,
+        "arms": 36.0
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "1",
+      "member_id": "1",
+      "member_name": "John Doe",
+      "type": "workout",
+      "title": "Completed Strength Training",
+      "description": "Finished full body workout routine",
+      "time": "2 hours ago",
+      "icon": "fitness_center"
+    },
+    {
+      "id": "2",
+      "member_id": "2",
+      "member_name": "Sarah Wilson",
+      "type": "assessment",
+      "title": "Completed Monthly Assessment",
+      "description": "Updated measurements and progress photos",
+      "time": "4 hours ago",
+      "icon": "assessment"
+    },
+    {
+      "id": "3",
+      "member_id": "3",
+      "member_name": "Mike Johnson",
+      "type": "nutrition",
+      "title": "Updated Nutrition Plan",
+      "description": "Adjusted macros for bulking phase",
+      "time": "1 hour ago",
+      "icon": "restaurant"
+    }
+  ],
+  "upcoming_sessions": [
+    {
+      "id": "1",
+      "time": "10:00 AM",
+      "title": "Personal Training - John Doe",
+      "subtitle": "Strength Training",
+      "member_id": "1",
+      "type": "personal"
+    },
+    {
+      "id": "2",
+      "time": "2:00 PM",
+      "title": "Group Session - HIIT",
+      "subtitle": "5 participants",
+      "type": "group"
+    },
+    {
+      "id": "3",
+      "time": "4:30 PM",
+      "title": "Assessment - Sarah Wilson",
+      "subtitle": "Monthly Progress Check",
+      "member_id": "2",
+      "type": "assessment"
+    }
+  ]
+}

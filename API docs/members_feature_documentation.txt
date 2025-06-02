@@ -1,0 +1,165 @@
+MEMBERS FEATURE DOCUMENTATION
+==========================
+
+1. Backend APIs
+--------------
+Base URL: https://api.wildfit-coach.com/v1
+
+a) Get All Members:
+   - Endpoint: /members
+   - Method: GET
+   - Authentication: Required
+   - Response: List of members
+
+b) Get Member Details:
+   - Endpoint: /members/{memberId}
+   - Method: GET
+   - Authentication: Required
+   - Response: Detailed member information
+
+c) Update Member:
+   - Endpoint: /members/{memberId}
+   - Method: PUT
+   - Authentication: Required
+   - Request Body: Member data model
+
+2. Data Models
+-------------
+
+a) Member:
+   Required Fields:
+   - id (String)
+   - name (String)
+   - email (String)
+   - joinedAt (DateTime)
+   - plan (String)
+   - membershipExpiryDate (DateTime)
+   - height (double)
+   - weight (double)
+
+   Optional Fields:
+   - phone (String?)
+   - hasWorkoutPlan (bool)
+   - hasNutritionPlan (bool)
+   - hasAssessment (bool)
+   - measurements (Map<String, dynamic>?)
+   - workoutPlanIds (List<String>?)
+   - nutritionPlanIds (List<String>?)
+   - assessments (List<Assessment>?)
+   - trainerName (String?)
+   - lastCheckIn (DateTime?)
+   - daysPresent (int?)
+   - todayActivities (List<Activity>?)
+   - bodyFat (double?)
+   - muscleMass (double?)
+   - bmi (double?)
+   - weightGoal (double?)
+   - bodyFatGoal (double?)
+   - weeklyWorkoutGoal (int?)
+   - checkIns (List<DateTime>?)
+   - currentStreak (int?)
+   - activePrograms (int?)
+
+b) Activity:
+   - name (String)
+   - type (ActivityType)
+   - time (DateTime)
+
+   ActivityType Enum:
+   - workout
+   - cardio
+   - class_
+   - assessment
+
+c) Assessment:
+   - id (String)
+   - date (DateTime)
+   - type (AssessmentType)
+   - data (Map<String, dynamic>)
+
+   AssessmentType Enum:
+   - bloodPressure
+   - cardioFitness
+   - muscularFlexibility
+   - detailedMeasurements
+
+d) MemberStats:
+   - memberId (String)
+   - lastUpdated (DateTime)
+   - measurements (BodyMeasurements)
+   - workoutProgress (List<WorkoutProgress>)
+   - nutritionProgress (List<NutritionProgress>)
+   - vitalSigns (VitalSigns)
+
+3. Detailed Measurements
+-----------------------
+a) Body Measurements:
+   - weight (double)
+   - height (double)
+   - chest (double)
+   - waist (double)
+   - hips (double)
+   - arms (double)
+   - thighs (double)
+   - calves (double)
+   - bodyFatPercentage (double)
+   - muscleMass (double)
+
+b) Vital Signs:
+   - restingHeartRate (int)
+   - bloodPressureSystolic (int)
+   - bloodPressureDiastolic (int)
+   - bodyTemperature (double)
+   - respiratoryRate (int)
+   - oxygenSaturation (double)
+
+4. Progress Tracking
+-------------------
+a) Workout Progress:
+   - date (DateTime)
+   - workoutId (String)
+   - workoutName (String)
+   - completedSets (int)
+   - totalSets (int)
+   - weights (Map<String, double>)
+   - duration (int)
+   - caloriesBurned (double)
+
+b) Nutrition Progress:
+   - date (DateTime)
+   - totalCalories (int)
+   - macros (Map<String, double>)
+   - waterIntake (int)
+   - supplements (List<String>)
+   - followedPlan (bool)
+
+5. State Management
+------------------
+States:
+- MemberInitial
+- MemberLoading
+- MemberLoaded (Member)
+- MemberError (String message)
+
+Events:
+- LoadMember (String memberId)
+- UpdateMember (Member)
+
+6. Data Validation Rules
+-----------------------
+- ID: Required, unique identifier
+- Name: Required, non-empty string
+- Email: Required, valid email format
+- Plan: Required, valid subscription plan
+- Height: Required, positive value
+- Weight: Required, positive value
+- Dates: Valid DateTime objects
+- Measurements: Valid numeric values
+- Goals: Positive numeric values
+
+7. Dependencies
+--------------
+- flutter_bloc: State management
+- equatable: Value comparison
+- dio: HTTP client
+- json_serializable: JSON handling
