@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/user_assessment.dart';
 import '../../domain/usecases/get_assessments.dart';
 import '../../domain/usecases/get_assessment_by_id.dart';
@@ -34,59 +35,54 @@ class AssessmentBloc extends Bloc<AssessmentEvent, AssessmentState> {
   Future<void> _onLoadAssessments(
       LoadAssessments event, Emitter<AssessmentState> emit) async {
     emit(AssessmentLoading());
-    try {
-      final assessments = await getAssessments();
-      emit(AssessmentsLoaded(assessments));
-    } catch (e) {
-      emit(AssessmentError(e.toString()));
-    }
+    final result = await getAssessments(NoParams());
+    result.fold(
+      (failure) => emit(AssessmentError(failure.message)),
+      (assessments) => emit(AssessmentsLoaded(assessments)),
+    );
   }
 
   Future<void> _onLoadAssessmentById(
       LoadAssessmentById event, Emitter<AssessmentState> emit) async {
     emit(AssessmentLoading());
-    try {
-      final assessment = await getAssessmentById(event.id);
-      if (assessment != null) {
-        emit(AssessmentLoaded(assessment));
-      } else {
-        emit(const AssessmentError('Assessment not found'));
-      }
-    } catch (e) {
-      emit(AssessmentError(e.toString()));
-    }
+    final result = await getAssessmentById(Params(id: event.id));
+    result.fold(
+      (failure) => emit(AssessmentError(failure.message)),
+      (assessment) => assessment != null
+          ? emit(AssessmentLoaded(assessment))
+          : emit(const AssessmentError('Assessment not found')),
+    );
   }
 
   Future<void> _onCreateAssessment(
       CreateAssessment event, Emitter<AssessmentState> emit) async {
     emit(AssessmentLoading());
-    try {
-      await saveAssessment(event.assessment);
-      emit(AssessmentCreated());
-    } catch (e) {
-      emit(AssessmentError(e.toString()));
-    }
+    final result =
+        await saveAssessment(SaveParams(assessment: event.assessment));
+    result.fold(
+      (failure) => emit(AssessmentError(failure.message)),
+      (_) => emit(AssessmentCreated()),
+    );
   }
 
   Future<void> _onUpdateAssessment(
       UpdateAssessmentEvent event, Emitter<AssessmentState> emit) async {
     emit(AssessmentLoading());
-    try {
-      await updateAssessment(event.assessment);
-      emit(AssessmentUpdated());
-    } catch (e) {
-      emit(AssessmentError(e.toString()));
-    }
+    final result =
+        await updateAssessment(UpdateParams(assessment: event.assessment));
+    result.fold(
+      (failure) => emit(AssessmentError(failure.message)),
+      (_) => emit(AssessmentUpdated()),
+    );
   }
 
   Future<void> _onDeleteAssessment(
       DeleteAssessmentEvent event, Emitter<AssessmentState> emit) async {
     emit(AssessmentLoading());
-    try {
-      await deleteAssessment(event.id);
-      emit(AssessmentDeleted());
-    } catch (e) {
-      emit(AssessmentError(e.toString()));
-    }
+    final result = await deleteAssessment(DeleteParams(id: event.id));
+    result.fold(
+      (failure) => emit(AssessmentError(failure.message)),
+      (_) => emit(AssessmentDeleted()),
+    );
   }
 }

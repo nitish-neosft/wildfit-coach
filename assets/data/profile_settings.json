@@ -1,0 +1,20 @@
+{
+  "user_id": "12345",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "avatar": "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff",
+  "notifications": {
+    "check_in_reminders": true,
+    "check_out_reminders": true,
+    "nutrition_plan_alerts": true,
+    "fitness_test_reminders": false,
+    "workout_plan_alerts": true,
+    "trainer_attendance_summary": false,
+    "payment_reminders": true
+  },
+  "language": "English",
+  "has_workout_plan": true,
+  "has_nutrition_plan": true,
+  "has_fitness_test": false,
+  "has_unpaid_dues": true
+}

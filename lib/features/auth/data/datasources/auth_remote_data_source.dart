@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
 import '../../../../core/error/exceptions.dart';
-import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/rest_client.dart';
 import '../models/user_model.dart';
+import 'package:dio/dio.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> login(String email, String password);
@@ -11,63 +11,79 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final Dio _dio;
+  final RestClient _client;
 
-  AuthRemoteDataSourceImpl(this._dio);
+  AuthRemoteDataSourceImpl(this._client);
 
   @override
   Future<UserModel> login(String email, String password) async {
     try {
-      final response = await _dio.post(
-        ApiEndpoints.login,
-        data: {
-          'email': email,
-          'password': password,
-        },
-      );
-      return UserModel.fromJson(response.data);
+      return await _client.login({
+        'email': email,
+        'password': password,
+      });
     } on DioException catch (e) {
-      throw UnauthorizedException(e.message ?? 'Invalid credentials');
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Invalid credentials');
+      } else if (e.response?.statusCode == 400) {
+        throw BadRequestException('Invalid email or password format');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        throw NetworkException('Connection timeout');
+      } else {
+        throw ServerException(e.message ?? 'Server error occurred');
+      }
     }
   }
 
   @override
   Future<UserModel> register(String name, String email, String password) async {
     try {
-      final response = await _dio.post(
-        ApiEndpoints.register,
-        data: {
-          'name': name,
-          'email': email,
-          'password': password,
-        },
-      );
-      return UserModel.fromJson(response.data);
+      return await _client.register({
+        'name': name,
+        'email': email,
+        'password': password,
+      });
     } on DioException catch (e) {
-      throw BadRequestException(e.message ?? 'Registration failed');
+      if (e.response?.statusCode == 400) {
+        throw BadRequestException('Email already exists or invalid data');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        throw NetworkException('Connection timeout');
+      } else {
+        throw ServerException(e.message ?? 'Registration failed');
+      }
     }
   }
 
   @override
   Future<UserModel> refreshToken() async {
     try {
-      final response = await _dio.post(ApiEndpoints.refreshToken);
-      return UserModel.fromJson(response.data);
+      return await _client.refreshToken();
     } on DioException catch (e) {
-      throw UnauthorizedException(e.message ?? 'Token refresh failed');
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Token expired or invalid');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        throw NetworkException('Connection timeout');
+      } else {
+        throw ServerException(e.message ?? 'Token refresh failed');
+      }
     }
   }
 
   @override
   Future<bool> resetPassword(String email) async {
     try {
-      await _dio.post(
-        ApiEndpoints.resetPassword,
-        data: {'email': email},
-      );
+      await _client.resetPassword({'email': email});
       return true;
-    } on DioException {
-      return false;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw NotFoundException('Email not found');
+      } else if (e.response?.statusCode == 400) {
+        throw BadRequestException('Invalid email format');
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        throw NetworkException('Connection timeout');
+      } else {
+        throw ServerException(e.message ?? 'Password reset failed');
+      }
     }
   }
 }

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/workout_plan.dart';
+import '../bloc/workout_plan/workout_plan_bloc.dart';
+import '../bloc/workout_plan/workout_plan_state.dart';
+import '../bloc/workout_plan/workout_plan_event.dart';
+
 import '../../../../core/constants/colors.dart';
-import '../../bloc/workout_plan_bloc.dart';
-import '../../domain/models/workout_plan.dart';
+import '../../../../core/di/injection_container.dart';
 
 class WorkoutPlanScreen extends StatelessWidget {
   final String memberId;
@@ -17,7 +21,7 @@ class WorkoutPlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WorkoutPlanBloc()
+      create: (context) => sl<WorkoutPlanBloc>()
         ..add(LoadWorkoutPlan(
           planId: planId,
           memberId: memberId,
@@ -98,7 +102,7 @@ class WorkoutPlanScreen extends StatelessWidget {
             _buildDetailRow(
               icon: Icons.fitness_center,
               label: 'Type',
-              value: plan.type.toString().split('.').last.toUpperCase(),
+              value: plan.type,
             ),
             const SizedBox(height: 12),
             _buildDetailRow(
@@ -116,7 +120,8 @@ class WorkoutPlanScreen extends StatelessWidget {
             _buildDetailRow(
               icon: Icons.star,
               label: 'Difficulty',
-              value: plan.difficulty.toString().split('.').last.toUpperCase(),
+              value: ((plan.goals?['difficulty'] as String?) ?? 'beginner')
+                  .toUpperCase(),
             ),
           ],
         ),
@@ -125,6 +130,8 @@ class WorkoutPlanScreen extends StatelessWidget {
   }
 
   Widget _buildWorkoutSchedule(WorkoutPlan plan) {
+    final sessions = plan.sessions;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -142,22 +149,22 @@ class WorkoutPlanScreen extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: plan.schedule.length,
+              itemCount: sessions.length,
               itemBuilder: (context, index) {
-                final day = plan.schedule[index];
+                final session = sessions[index];
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: AppColors.primary.withOpacity(0.1),
                     child: Text(
-                      'D${day.dayNumber}',
+                      'D${session.dayOfWeek}',
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  title: Text(day.name),
-                  subtitle: Text(day.description),
+                  title: Text(session.name),
+                  subtitle: Text(session.type),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     // TODO: Navigate to day detail
@@ -172,6 +179,8 @@ class WorkoutPlanScreen extends StatelessWidget {
   }
 
   Widget _buildExerciseList(BuildContext context, WorkoutPlan plan) {
+    final allExercises = plan.sessions.expand((s) => s.exercises).toList();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -201,10 +210,10 @@ class WorkoutPlanScreen extends StatelessWidget {
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: plan.exercises.length,
+              itemCount: allExercises.length,
               separatorBuilder: (context, index) => const Divider(),
               itemBuilder: (context, index) {
-                final exercise = plan.exercises[index];
+                final exercise = allExercises[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Column(
@@ -233,7 +242,7 @@ class WorkoutPlanScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  exercise.description,
+                                  exercise.type,
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[600],
@@ -255,7 +264,10 @@ class WorkoutPlanScreen extends StatelessWidget {
                             onPressed: () {
                               context
                                   .read<WorkoutPlanBloc>()
-                                  .add(DeleteExercise(exercise.id));
+                                  .add(DeleteExercise(
+                                    planId: plan.id,
+                                    exerciseId: exercise.id,
+                                  ));
                             },
                             padding: const EdgeInsets.all(8),
                             constraints: const BoxConstraints(),

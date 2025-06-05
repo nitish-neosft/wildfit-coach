@@ -7,6 +7,7 @@ import '../../../domain/entities/cardio_fitness.dart';
 import '../../../domain/entities/muscular_endurance.dart';
 import '../../../domain/entities/flexibility_tests.dart';
 import '../../../domain/usecases/save_assessment.dart';
+import '../../../../../core/error/failures.dart';
 
 part 'blood_pressure_event.dart';
 part 'blood_pressure_state.dart';
@@ -37,54 +38,62 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     Emitter<BloodPressureState> emit,
   ) async {
     emit(BloodPressureSaving());
-    try {
-      final vitalSigns = VitalSigns(
-        bloodPressure: '${event.systolic}/${event.diastolic}',
-        restingHeartRate: event.restingHeartRate,
-        bpCategory: event.bpCategory,
-      );
 
-      final assessment = UserAssessment(
-        name: 'Blood Pressure Assessment ${event.date}',
-        vitalSigns: vitalSigns,
-        bodyMeasurements: const BodyMeasurements(
-          height: 0,
-          weight: 0,
-          chest: 0,
-          waist: 0,
-          hips: 0,
-          arms: 0,
-          neck: 0,
-          forearm: 0,
-          calf: 0,
-          midThigh: 0,
-        ),
-        cardioFitness: const CardioFitness(
-          vo2Max: 0,
-          rockportTestResult: '',
-          ymcaStepTestResult: '',
-          ymcaHeartRate: 0,
-        ),
-        muscularEndurance: const MuscularEndurance(
-          pushUps: 0,
-          pushUpType: '',
-          squats: 0,
-          squatType: '',
-          pullUps: 0,
-        ),
-        flexibilityTests: const FlexibilityTests(
-          quadriceps: false,
-          hamstring: false,
-          hipFlexors: false,
-          shoulderMobility: false,
-          sitAndReach: false,
-        ),
-      );
+    final vitalSigns = VitalSigns(
+      bloodPressure: '${event.systolic}/${event.diastolic}',
+      restingHeartRate: event.restingHeartRate,
+      bpCategory: event.bpCategory,
+    );
 
-      await saveAssessment(assessment);
-      emit(BloodPressureSaved());
-    } catch (e) {
-      emit(BloodPressureError(e.toString()));
-    }
+    final assessment = UserAssessment(
+      name: 'Blood Pressure Assessment ${event.date}',
+      vitalSigns: vitalSigns,
+      bodyMeasurements: const BodyMeasurements(
+        height: 0,
+        weight: 0,
+        chest: 0,
+        waist: 0,
+        hips: 0,
+        arms: 0,
+        neck: 0,
+        forearm: 0,
+        calf: 0,
+        midThigh: 0,
+      ),
+      cardioFitness: const CardioFitness(
+        vo2Max: 0,
+        rockportTestResult: '',
+        ymcaStepTestResult: '',
+        ymcaHeartRate: 0,
+      ),
+      muscularEndurance: const MuscularEndurance(
+        pushUps: 0,
+        pushUpType: '',
+        squats: 0,
+        squatType: '',
+        pullUps: 0,
+      ),
+      flexibilityTests: const FlexibilityTests(
+        quadriceps: false,
+        hamstring: false,
+        hipFlexors: false,
+        shoulderMobility: false,
+        sitAndReach: false,
+      ),
+    );
+
+    final result = await saveAssessment(SaveParams(assessment: assessment));
+    result.fold(
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(BloodPressureError('Server error: ${failure.message}'));
+        } else if (failure is NetworkFailure) {
+          emit(BloodPressureError('Network error: ${failure.message}'));
+        } else {
+          emit(BloodPressureError(failure.message));
+        }
+      },
+      (_) => emit(BloodPressureSaved()),
+    );
   }
 }

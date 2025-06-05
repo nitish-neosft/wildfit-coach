@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../widgets/measurement_input_field.dart';
 import '../bloc/cardio_fitness/cardio_fitness_bloc.dart';
 import '../../domain/entities/vital_signs.dart';
 import '../../domain/entities/body_measurements.dart';
-import '../../domain/entities/cardio_fitness.dart';
+
 import '../../domain/entities/muscular_endurance.dart';
 import '../../domain/entities/flexibility_tests.dart';
 import '../../domain/usecases/save_assessment.dart';
@@ -162,206 +163,189 @@ class _CardioFitnessScreenState extends State<CardioFitnessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CardioFitnessBloc, CardioFitnessState>(
-      listener: (context, state) {
-        if (state is CardioFitnessSaved) {
-          context.pop();
-        } else if (state is CardioFitnessError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Cardio-Respiratory Fitness'),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTestSection(
-                        'Rockport 1-Mile Test',
-                        'Record your performance for the 1-mile walk test',
-                        [
-                          TextFormField(
-                            controller: _timeController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Time',
-                              suffixText: 'minutes',
-                              hintText: '15',
+    return BlocProvider(
+      create: (context) => CardioFitnessBloc(
+        saveAssessment: context.read<SaveAssessment>(),
+      ),
+      child: BlocConsumer<CardioFitnessBloc, CardioFitnessState>(
+        listener: (context, state) {
+          if (state is CardioFitnessSaved) {
+            context.pop();
+          } else if (state is CardioFitnessError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Cardio-Respiratory Fitness'),
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTestSection(
+                          'Rockport 1-Mile Test',
+                          'Record your performance for the 1-mile walk test',
+                          [
+                            MeasurementInputField(
+                              label: 'Time',
+                              controller: _timeController,
+                              unit: 'minutes',
+                              textInputAction: TextInputAction.next,
                             ),
-                            validator: _validateNumber,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _distanceController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Distance',
-                              suffixText: 'miles',
-                              hintText: '1.0',
+                            const SizedBox(height: 16),
+                            MeasurementInputField(
+                              label: 'Distance',
+                              controller: _distanceController,
+                              unit: 'miles',
+                              textInputAction: TextInputAction.next,
                             ),
-                            validator: _validateNumber,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _pulseController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Post-test Pulse',
-                              suffixText: 'bpm',
-                              hintText: '120',
+                            const SizedBox(height: 16),
+                            MeasurementInputField(
+                              label: 'Post-test Pulse',
+                              controller: _pulseController,
+                              unit: 'bpm',
+                              textInputAction: TextInputAction.next,
                             ),
-                            validator: _validateNumber,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _vo2maxController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'VO2 Max',
-                              suffixText: 'ml/kg/min',
-                              hintText: '35',
+                            const SizedBox(height: 16),
+                            MeasurementInputField(
+                              label: 'VO2 Max',
+                              controller: _vo2maxController,
+                              unit: 'ml/kg/min',
+                              textInputAction: TextInputAction.next,
                             ),
-                            validator: _validateNumber,
-                          ),
-                          const SizedBox(height: 16),
-                          BlocBuilder<CardioFitnessBloc, CardioFitnessState>(
-                            builder: (context, state) {
-                              return DropdownButtonFormField<String>(
-                                value: state is CardioFitnessInitial
-                                    ? state.rockportFitnessCategory
-                                    : 'Average',
-                                decoration: const InputDecoration(
-                                  labelText: 'Fitness Category',
-                                  border: InputBorder.none,
-                                ),
-                                dropdownColor: AppColors.darkCard,
-                                style: const TextStyle(color: AppColors.white),
-                                items: _fitnessCategories.map((category) {
-                                  return DropdownMenuItem(
-                                    value: category,
-                                    child: Text(category),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    context.read<CardioFitnessBloc>().add(
-                                          UpdateRockportCategory(value),
-                                        );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      _buildTestSection(
-                        'YMCA Step Test',
-                        'Record your heart rate after completing the 3-minute step test',
-                        [
-                          TextFormField(
-                            controller: _ymcaHeartRateController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: AppColors.white),
-                            decoration: const InputDecoration(
-                              labelText: 'Heart Rate',
-                              suffixText: 'bpm',
-                              hintText: '100',
+                            const SizedBox(height: 16),
+                            BlocBuilder<CardioFitnessBloc, CardioFitnessState>(
+                              builder: (context, state) {
+                                return DropdownButtonFormField<String>(
+                                  value: state is CardioFitnessInitial
+                                      ? state.rockportFitnessCategory
+                                      : 'Average',
+                                  decoration: const InputDecoration(
+                                    labelText: 'Fitness Category',
+                                    border: InputBorder.none,
+                                  ),
+                                  dropdownColor: AppColors.darkCard,
+                                  style:
+                                      const TextStyle(color: AppColors.white),
+                                  items: _fitnessCategories.map((category) {
+                                    return DropdownMenuItem(
+                                      value: category,
+                                      child: Text(category),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context.read<CardioFitnessBloc>().add(
+                                            UpdateRockportCategory(value),
+                                          );
+                                    }
+                                  },
+                                );
+                              },
                             ),
-                            validator: _validateNumber,
-                          ),
-                          const SizedBox(height: 16),
-                          BlocBuilder<CardioFitnessBloc, CardioFitnessState>(
-                            builder: (context, state) {
-                              return DropdownButtonFormField<String>(
-                                value: state is CardioFitnessInitial
-                                    ? state.ymcaFitnessCategory
-                                    : 'Average',
-                                decoration: const InputDecoration(
-                                  labelText: 'Fitness Category',
-                                  border: InputBorder.none,
-                                ),
-                                dropdownColor: AppColors.darkCard,
-                                style: const TextStyle(color: AppColors.white),
-                                items: _fitnessCategories.map((category) {
-                                  return DropdownMenuItem(
-                                    value: category,
-                                    child: Text(category),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    context.read<CardioFitnessBloc>().add(
-                                          UpdateYmcaCategory(value),
-                                        );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed:
-                            state is! CardioFitnessSaving ? _handleNext : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (state is CardioFitnessSaving) ...[
-                              const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.white,
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                            ],
-                            const Text(
-                              'Continue',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (state is! CardioFitnessSaving) ...[
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward),
-                            ],
                           ],
                         ),
-                      ),
-                    ],
+                        _buildTestSection(
+                          'YMCA Step Test',
+                          'Record your heart rate after completing the 3-minute step test',
+                          [
+                            MeasurementInputField(
+                              label: 'Heart Rate',
+                              controller: _ymcaHeartRateController,
+                              unit: 'bpm',
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: 16),
+                            BlocBuilder<CardioFitnessBloc, CardioFitnessState>(
+                              builder: (context, state) {
+                                return DropdownButtonFormField<String>(
+                                  value: state is CardioFitnessInitial
+                                      ? state.ymcaFitnessCategory
+                                      : 'Average',
+                                  decoration: const InputDecoration(
+                                    labelText: 'Fitness Category',
+                                    border: InputBorder.none,
+                                  ),
+                                  dropdownColor: AppColors.darkCard,
+                                  style:
+                                      const TextStyle(color: AppColors.white),
+                                  items: _fitnessCategories.map((category) {
+                                    return DropdownMenuItem(
+                                      value: category,
+                                      child: Text(category),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context.read<CardioFitnessBloc>().add(
+                                            UpdateYmcaCategory(value),
+                                          );
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: state is! CardioFitnessSaving
+                              ? _handleNext
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (state is CardioFitnessSaving) ...[
+                                const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                              const Text(
+                                'Continue',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (state is! CardioFitnessSaving) ...[
+                                const SizedBox(width: 8),
+                                const Icon(Icons.arrow_forward),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -49,12 +49,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final user = await _login(event.email, event.password);
-      emit(Authenticated(user));
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
+    final result = await _login(event.email, event.password);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(Authenticated(user)),
+    );
   }
 
   /// Handles the registration request event.
@@ -65,12 +64,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final user = await _register(event.name, event.email, event.password);
-      emit(Authenticated(user));
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
+    final result = await _register(event.name, event.email, event.password);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(Authenticated(user)),
+    );
   }
 
   /// Handles the logout request event.
@@ -81,12 +79,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      await _logout();
-      emit(Unauthenticated());
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
+    final result = await _logout();
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (_) => emit(Unauthenticated()),
+    );
   }
 
   /// Handles the check auth status request event.
@@ -97,16 +94,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final user = await _checkAuthStatus();
-      if (user != null) {
-        emit(Authenticated(user));
-      } else {
-        emit(Unauthenticated());
-      }
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
+    final result = await _checkAuthStatus();
+    result.fold(
+      (failure) => emit(Unauthenticated()),
+      (user) =>
+          user != null ? emit(Authenticated(user)) : emit(Unauthenticated()),
+    );
   }
 
   /// Handles the token refresh request event.
@@ -115,12 +108,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     TokenRefreshRequested event,
     Emitter<AuthState> emit,
   ) async {
-    try {
-      final user = await _refreshToken();
-      emit(Authenticated(user));
-    } catch (e) {
-      emit(AuthError(e.toString()));
-    }
+    emit(AuthLoading());
+    final result = await _refreshToken();
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (user) => emit(Authenticated(user)),
+    );
   }
 
   /// Handles the password reset request event.
@@ -131,15 +124,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final success = await _resetPassword(event.email);
-      if (success) {
-        emit(PasswordResetRequested());
-      } else {
-        emit(const PasswordResetError('Failed to reset password'));
-      }
-    } catch (e) {
-      emit(PasswordResetError(e.toString()));
-    }
+    final result = await _resetPassword(event.email);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      (success) => emit(
+        success ? const PasswordResetSuccess() : const PasswordResetFailure(),
+      ),
+    );
   }
 }

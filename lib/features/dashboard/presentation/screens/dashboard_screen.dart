@@ -22,7 +22,7 @@ class DashboardScreen extends StatelessWidget {
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           if (authState is Authenticated && authState.user != null) {
-            final user = authState.user!;
+            final user = authState.user;
             final name = user.name ?? 'Professional';
             final avatar = user.profileImage ??
                 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(name)}&background=0D8ABC&color=fff';
@@ -196,8 +196,8 @@ class DashboardScreen extends StatelessWidget {
                                     ),
                                     QuickActionCard(
                                       icon: Icons.fitness_center,
-                                      title: 'Create Workout',
-                                      onTap: () => context.push('/workout/new'),
+                                      title: 'Workouts',
+                                      onTap: () => context.push('/workouts'),
                                     ),
                                     QuickActionCard(
                                       icon: Icons.restaurant_menu,

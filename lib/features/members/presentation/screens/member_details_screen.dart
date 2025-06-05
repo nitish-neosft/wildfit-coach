@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../bloc/member_bloc.dart';
 import '../widgets/member_details/index.dart';
-import '../../domain/models/member.dart';
+import '../../domain/entities/member.dart';
+import '../bloc/member/member_bloc.dart';
+import '../bloc/member/member_state.dart';
+import '../bloc/member/member_event.dart';
 
 class MemberDetailsScreen extends StatelessWidget {
   final String memberId;
@@ -48,8 +50,7 @@ class MemberDetailsScreen extends StatelessWidget {
               );
             }
             if (state is MemberLoaded) {
-              final dashboardMember = state.member;
-              final member = Member.fromDashboardMember(dashboardMember);
+              final member = state.member;
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

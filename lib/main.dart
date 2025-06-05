@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wildfit_coach/features/members/domain/repositories/member_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/router.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/data/services/user_service.dart';
-import 'features/members/data/member_repository.dart';
 import 'features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'core/di/injection_container.dart' as di;
 
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
           create: (context) => di.sl<DashboardBloc>(),
         ),
         RepositoryProvider<MemberRepository>(
-          create: (context) => MemberRepository(),
+          create: (context) => di.sl<MemberRepository>(),
         ),
       ],
       child: MaterialApp.router(

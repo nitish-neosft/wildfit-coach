@@ -7,6 +7,7 @@ import '../../../domain/entities/cardio_fitness.dart';
 import '../../../domain/entities/muscular_endurance.dart';
 import '../../../domain/entities/flexibility_tests.dart';
 import '../../../domain/usecases/save_assessment.dart';
+import '../../../../../core/error/failures.dart';
 
 part 'muscular_flexibility_event.dart';
 part 'muscular_flexibility_state.dart';
@@ -67,56 +68,64 @@ class MuscularFlexibilityBloc
     Emitter<MuscularFlexibilityState> emit,
   ) async {
     emit(MuscularFlexibilitySaving());
-    try {
-      final muscularEndurance = MuscularEndurance(
-        pushUps: event.pushUps,
-        pushUpType: event.pushUpType,
-        squats: event.squats,
-        squatType: event.squatType,
-        pullUps: event.pullUps,
-      );
 
-      final flexibilityTests = FlexibilityTests(
-        quadriceps: event.quadricepsPass,
-        hamstring: event.hamstringPass,
-        hipFlexors: event.hipFlexorsPass,
-        shoulderMobility: event.shoulderMobilityPass,
-        sitAndReach: event.sitAndReachPass,
-      );
+    final muscularEndurance = MuscularEndurance(
+      pushUps: event.pushUps,
+      pushUpType: event.pushUpType,
+      squats: event.squats,
+      squatType: event.squatType,
+      pullUps: event.pullUps,
+    );
 
-      final assessment = UserAssessment(
-        name: 'Muscular Flexibility Assessment ${event.date}',
-        vitalSigns: const VitalSigns(
-          bloodPressure: '',
-          restingHeartRate: 0,
-          bpCategory: '',
-        ),
-        bodyMeasurements: const BodyMeasurements(
-          height: 0,
-          weight: 0,
-          chest: 0,
-          waist: 0,
-          hips: 0,
-          arms: 0,
-          neck: 0,
-          forearm: 0,
-          calf: 0,
-          midThigh: 0,
-        ),
-        cardioFitness: const CardioFitness(
-          vo2Max: 0,
-          rockportTestResult: '',
-          ymcaStepTestResult: '',
-          ymcaHeartRate: 0,
-        ),
-        muscularEndurance: muscularEndurance,
-        flexibilityTests: flexibilityTests,
-      );
+    final flexibilityTests = FlexibilityTests(
+      quadriceps: event.quadricepsPass,
+      hamstring: event.hamstringPass,
+      hipFlexors: event.hipFlexorsPass,
+      shoulderMobility: event.shoulderMobilityPass,
+      sitAndReach: event.sitAndReachPass,
+    );
 
-      await saveAssessment(assessment);
-      emit(MuscularFlexibilitySaved());
-    } catch (e) {
-      emit(MuscularFlexibilityError(e.toString()));
-    }
+    final assessment = UserAssessment(
+      name: 'Muscular Flexibility Assessment ${event.date}',
+      vitalSigns: const VitalSigns(
+        bloodPressure: '',
+        restingHeartRate: 0,
+        bpCategory: '',
+      ),
+      bodyMeasurements: const BodyMeasurements(
+        height: 0,
+        weight: 0,
+        chest: 0,
+        waist: 0,
+        hips: 0,
+        arms: 0,
+        neck: 0,
+        forearm: 0,
+        calf: 0,
+        midThigh: 0,
+      ),
+      cardioFitness: const CardioFitness(
+        vo2Max: 0,
+        rockportTestResult: '',
+        ymcaStepTestResult: '',
+        ymcaHeartRate: 0,
+      ),
+      muscularEndurance: muscularEndurance,
+      flexibilityTests: flexibilityTests,
+    );
+
+    final result = await saveAssessment(SaveParams(assessment: assessment));
+    result.fold(
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(MuscularFlexibilityError('Server error: ${failure.message}'));
+        } else if (failure is NetworkFailure) {
+          emit(MuscularFlexibilityError('Network error: ${failure.message}'));
+        } else {
+          emit(MuscularFlexibilityError(failure.message));
+        }
+      },
+      (_) => emit(MuscularFlexibilitySaved()),
+    );
   }
 }

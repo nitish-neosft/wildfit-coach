@@ -45,3 +45,8 @@ class NotFoundException implements Exception {
   @override
   String toString() => message;
 }
+
+class CacheException implements Exception {
+  final String message;
+  CacheException(this.message);
+}

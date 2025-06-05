@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
 import '../repositories/auth_repository.dart';
 
 class ResetPassword {
@@ -5,7 +7,7 @@ class ResetPassword {
 
   ResetPassword(this.repository);
 
-  Future<bool> call(String email) {
+  Future<Either<Failure, bool>> call(String email) {
     return repository.resetPassword(email);
   }
 }

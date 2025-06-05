@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../widgets/test_result_row.dart';
 import '../bloc/muscular_flexibility/muscular_flexibility_bloc.dart';
+import '../../domain/usecases/save_assessment.dart';
 import '../../domain/entities/muscular_endurance.dart';
 import '../../domain/entities/flexibility_tests.dart';
-import '../../domain/entities/vital_signs.dart';
-import '../../domain/entities/body_measurements.dart';
-import '../../domain/entities/cardio_fitness.dart';
-import '../../domain/entities/user_assessment.dart';
-import '../../domain/usecases/save_assessment.dart';
 
 class MuscularFlexibilityScreen extends StatefulWidget {
   final DateTime? selectedMonth;
@@ -33,13 +30,22 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
   final List<String> _pushUpTypes = [
     'Standard',
     'Modified',
-    'Barbell Press',
+    'Wall',
   ];
 
   final List<String> _squatTypes = [
     'Body Weight',
     'Weighted',
+    'Assisted',
   ];
+
+  final Map<String, bool> _flexibilityTests = {
+    'Quadriceps Flexibility': false,
+    'Hamstring Flexibility': false,
+    'Hip Flexors Mobility': false,
+    'Shoulder Mobility': false,
+    'Sit and Reach': false,
+  };
 
   @override
   void dispose() {
@@ -49,92 +55,28 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
     super.dispose();
   }
 
-  void _handleFinish() {
+  void _handleNext() {
     if (_formKey.currentState!.validate()) {
+      final state = context.read<MuscularFlexibilityBloc>().state;
+      final pushUpType =
+          state is MuscularFlexibilityInitial ? state.pushUpType : 'Standard';
+      final squatType =
+          state is MuscularFlexibilityInitial ? state.squatType : 'Body Weight';
+
       final muscularEndurance = MuscularEndurance(
         pushUps: int.parse(_pushUpsController.text),
-        pushUpType: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                    as MuscularFlexibilityInitial)
-                .pushUpType
-            : 'Standard',
+        pushUpType: pushUpType,
         squats: int.parse(_squatsController.text),
-        squatType: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                    as MuscularFlexibilityInitial)
-                .squatType
-            : 'Body Weight',
+        squatType: squatType,
         pullUps: int.parse(_pullUpsController.text),
       );
 
       final flexibilityTests = FlexibilityTests(
-        quadriceps: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                        as MuscularFlexibilityInitial)
-                    .flexibilityTests['quadriceps'] ??
-                false
-            : false,
-        hamstring: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                        as MuscularFlexibilityInitial)
-                    .flexibilityTests['hamstring'] ??
-                false
-            : false,
-        hipFlexors: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                        as MuscularFlexibilityInitial)
-                    .flexibilityTests['hipFlexors'] ??
-                false
-            : false,
-        shoulderMobility: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                        as MuscularFlexibilityInitial)
-                    .flexibilityTests['shoulderMobility'] ??
-                false
-            : false,
-        sitAndReach: context.read<MuscularFlexibilityBloc>().state
-                is MuscularFlexibilityInitial
-            ? (context.read<MuscularFlexibilityBloc>().state
-                        as MuscularFlexibilityInitial)
-                    .flexibilityTests['sitAndReach'] ??
-                false
-            : false,
-      );
-
-      final assessment = UserAssessment(
-        name:
-            'Muscular Flexibility Assessment ${widget.selectedMonth ?? DateTime.now()}',
-        vitalSigns: const VitalSigns(
-          bloodPressure: '',
-          restingHeartRate: 0,
-          bpCategory: '',
-        ),
-        bodyMeasurements: const BodyMeasurements(
-          height: 0,
-          weight: 0,
-          chest: 0,
-          waist: 0,
-          hips: 0,
-          arms: 0,
-          neck: 0,
-          forearm: 0,
-          calf: 0,
-          midThigh: 0,
-        ),
-        cardioFitness: const CardioFitness(
-          vo2Max: 0,
-          rockportTestResult: '',
-          ymcaStepTestResult: '',
-          ymcaHeartRate: 0,
-        ),
-        muscularEndurance: muscularEndurance,
-        flexibilityTests: flexibilityTests,
+        quadriceps: _flexibilityTests['Quadriceps Flexibility']!,
+        hamstring: _flexibilityTests['Hamstring Flexibility']!,
+        hipFlexors: _flexibilityTests['Hip Flexors Mobility']!,
+        shoulderMobility: _flexibilityTests['Shoulder Mobility']!,
+        sitAndReach: _flexibilityTests['Sit and Reach']!,
       );
 
       context.read<MuscularFlexibilityBloc>().add(
@@ -165,7 +107,7 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
     return null;
   }
 
-  Widget _buildMuscularEnduranceSection() {
+  Widget _buildEnduranceSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -328,158 +270,63 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
             ),
           ),
           padding: const EdgeInsets.all(16),
-          child: BlocBuilder<MuscularFlexibilityBloc, MuscularFlexibilityState>(
-            builder: (context, state) {
-              final tests = state is MuscularFlexibilityInitial
-                  ? state.flexibilityTests
-                  : const {
-                      'quadriceps': false,
-                      'hamstring': false,
-                      'hipFlexors': false,
-                      'shoulderMobility': false,
-                      'sitAndReach': false,
-                    };
-
-              return Column(
-                children: [
-                  _buildFlexibilityTest(
-                      'Quadriceps', tests['quadriceps'] ?? false),
-                  const Divider(color: AppColors.darkDivider),
-                  _buildFlexibilityTest(
-                      'Hamstring', tests['hamstring'] ?? false),
-                  const Divider(color: AppColors.darkDivider),
-                  _buildFlexibilityTest(
-                      'Hip Flexors', tests['hipFlexors'] ?? false),
-                  const Divider(color: AppColors.darkDivider),
-                  _buildFlexibilityTest(
-                      'Shoulder Mobility', tests['shoulderMobility'] ?? false),
-                  const Divider(color: AppColors.darkDivider),
-                  _buildFlexibilityTest(
-                      'Sit and Reach', tests['sitAndReach'] ?? false),
-                ],
-              );
-            },
+          child: Column(
+            children: [
+              TestResultsList(
+                testResults: _flexibilityTests,
+                onTestTap: (test, currentValue) {
+                  setState(() {
+                    _flexibilityTests[test] = !currentValue;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              TestResultsSummary(
+                testResults: _flexibilityTests,
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildFlexibilityTest(String test, bool passed) {
-    // Convert display name to state key
-    String stateKey =
-        test.toLowerCase().replaceAll(' and ', 'And').replaceAll(' ', '');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            test,
-            style: const TextStyle(
-              color: AppColors.white,
-              fontSize: 16,
-            ),
-          ),
-          Row(
-            children: [
-              OutlinedButton(
-                onPressed: () {
-                  context.read<MuscularFlexibilityBloc>().add(
-                        UpdateFlexibilityTest(
-                          test: stateKey,
-                          passed: true,
-                        ),
-                      );
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor:
-                      passed ? AppColors.primary : Colors.transparent,
-                  side: BorderSide(
-                    color: passed ? AppColors.primary : AppColors.darkDivider,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                ),
-                child: Text(
-                  'Pass',
-                  style: TextStyle(
-                    color: passed ? AppColors.white : AppColors.darkGrey,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton(
-                onPressed: () {
-                  context.read<MuscularFlexibilityBloc>().add(
-                        UpdateFlexibilityTest(
-                          test: stateKey,
-                          passed: false,
-                        ),
-                      );
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: !passed ? Colors.red : Colors.transparent,
-                  side: BorderSide(
-                    color: !passed ? Colors.red : AppColors.darkDivider,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                ),
-                child: Text(
-                  'Fail',
-                  style: TextStyle(
-                    color: !passed ? AppColors.white : AppColors.darkGrey,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MuscularFlexibilityBloc, MuscularFlexibilityState>(
-      listener: (context, state) {
-        if (state is MuscularFlexibilitySaved) {
-          context.pop();
-        } else if (state is MuscularFlexibilityError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Muscular Flexibility Assessment'),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
+    return BlocProvider(
+      create: (context) => MuscularFlexibilityBloc(
+        saveAssessment: context.read<SaveAssessment>(),
+      ),
+      child: BlocConsumer<MuscularFlexibilityBloc, MuscularFlexibilityState>(
+        listener: (context, state) {
+          if (state is MuscularFlexibilitySaved) {
+            context.pop();
+          } else if (state is MuscularFlexibilityError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Muscular Flexibility'),
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildMuscularEnduranceSection(),
+                      _buildEnduranceSection(),
                       const SizedBox(height: 32),
                       _buildFlexibilitySection(),
                       const SizedBox(height: 48),
                       ElevatedButton(
                         onPressed: state is! MuscularFlexibilitySaving
-                            ? _handleFinish
+                            ? _handleNext
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
@@ -504,7 +351,7 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
                               const SizedBox(width: 12),
                             ],
                             const Text(
-                              'Save',
+                              'Continue',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -522,9 +369,9 @@ class _MuscularFlexibilityScreenState extends State<MuscularFlexibilityScreen> {
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

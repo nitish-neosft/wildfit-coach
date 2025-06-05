@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
 import '../repositories/auth_repository.dart';
 
 class Logout {
@@ -5,7 +7,7 @@ class Logout {
 
   Logout(this.repository);
 
-  Future<void> call() {
+  Future<Either<Failure, void>> call() {
     return repository.logout();
   }
 }

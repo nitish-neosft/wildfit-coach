@@ -19,6 +19,9 @@ class AppColors {
   static const Color darkCard = Color(0xFF252525);
   static const Color darkDivider = Color(0xFF323232);
 
+  // Accent Colors
+  static const Color accent = Color(0xFF6C63FF); // Modern purple accent color
+
   // Gradient colors
   static const List<Color> primaryGradient = [
     Color(0xFF7fc603),

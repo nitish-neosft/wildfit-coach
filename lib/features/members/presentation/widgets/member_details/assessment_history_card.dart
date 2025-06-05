@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wildfit_coach/features/members/domain/entities/assessment.dart';
 import '../../../../../core/constants/colors.dart';
-import '../../../domain/models/member.dart';
+import '../../../domain/entities/member.dart';
 
 class AssessmentHistoryCard extends StatelessWidget {
   final String title;
@@ -40,9 +41,9 @@ class AssessmentHistoryCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Assessment Details',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -162,6 +163,7 @@ class AssessmentHistoryCard extends StatelessWidget {
           ],
         );
     }
+    return const SizedBox(); // Default case
   }
 
   Widget _buildDetailRow(String label, String value) {

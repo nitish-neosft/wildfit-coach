@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wildfit_coach/features/members/domain/models/nutrition_plan.dart';
+import 'package:wildfit_coach/features/members/domain/entities/nutrition_plan.dart';
+import 'package:wildfit_coach/features/members/presentation/bloc/nutrition_plan/nutrition_plan_bloc.dart';
+import 'package:wildfit_coach/features/members/presentation/bloc/nutrition_plan/nutrition_plan_state.dart';
+
 import '../../../../core/constants/colors.dart';
-import '../../bloc/nutrition_plan_bloc.dart';
 
 class NutritionPlanScreen extends StatelessWidget {
   final String memberId;
@@ -176,7 +178,7 @@ class NutritionPlanScreen extends StatelessWidget {
                     children: [
                       const SizedBox(height: 4),
                       Text(
-                        '${meal.time.format(context)} | ${meal.calories} cal',
+                        '${meal.type} | ${meal.calories} cal',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -185,10 +187,10 @@ class NutritionPlanScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Wrap(
                         spacing: 8,
-                        children: meal.foods.map((food) {
+                        children: meal.ingredients.map((ingredient) {
                           return Chip(
                             label: Text(
-                              food,
+                              ingredient,
                               style: const TextStyle(fontSize: 12),
                             ),
                             backgroundColor: Colors.grey[200],
@@ -230,24 +232,24 @@ class NutritionPlanScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildNutrientProgress(
               'Protein',
-              plan.currentProtein,
-              plan.targetProtein,
+              plan.currentProtein.toDouble(),
+              plan.targetProtein.toDouble(),
               'g',
               Colors.blue,
             ),
             const SizedBox(height: 16),
             _buildNutrientProgress(
               'Carbs',
-              plan.currentCarbs,
-              plan.targetCarbs,
+              plan.currentCarbs.toDouble(),
+              plan.targetCarbs.toDouble(),
               'g',
               Colors.orange,
             ),
             const SizedBox(height: 16),
             _buildNutrientProgress(
               'Fats',
-              plan.currentFats,
-              plan.targetFats,
+              plan.currentFats.toDouble(),
+              plan.targetFats.toDouble(),
               'g',
               Colors.green,
             ),
@@ -339,7 +341,7 @@ class NutritionPlanScreen extends StatelessWidget {
                   leading: const Icon(Icons.medication),
                   title: Text(supplement.name),
                   subtitle: Text(
-                    '${supplement.dosage} | ${supplement.timing}',
+                    '${supplement.dosage} | ${supplement.frequency}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],

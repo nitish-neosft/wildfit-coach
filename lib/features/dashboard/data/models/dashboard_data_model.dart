@@ -18,8 +18,14 @@ class DashboardStatsModel {
     required this.clientProgress,
   });
 
-  factory DashboardStatsModel.fromJson(Map<String, dynamic> json) =>
-      _$DashboardStatsModelFromJson(json);
+  factory DashboardStatsModel.fromJson(Map<String, dynamic> json) {
+    return DashboardStatsModel(
+      activeClients: (json['active_clients'] as num?)?.toInt() ?? 0,
+      assessments: (json['assessments'] as num?)?.toInt() ?? 0,
+      todaySessions: (json['today_sessions'] as num?)?.toInt() ?? 0,
+      clientProgress: (json['client_progress'] as num?)?.toInt() ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$DashboardStatsModelToJson(this);
 

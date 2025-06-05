@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import '../../../../core/network/rest_client.dart';
 import '../models/user_assessment_model.dart';
 
 abstract class AssessmentRemoteDataSource {
@@ -10,17 +10,14 @@ abstract class AssessmentRemoteDataSource {
 }
 
 class AssessmentRemoteDataSourceImpl implements AssessmentRemoteDataSource {
-  final Dio dio;
+  final RestClient _client;
 
-  AssessmentRemoteDataSourceImpl(this.dio);
+  AssessmentRemoteDataSourceImpl(this._client);
 
   @override
   Future<void> saveAssessment(UserAssessmentModel assessment) async {
     try {
-      await dio.post(
-        '/assessments',
-        data: assessment.toJson(),
-      );
+      await _client.saveAssessment(assessment.toJson());
     } catch (e) {
       rethrow;
     }
@@ -29,10 +26,7 @@ class AssessmentRemoteDataSourceImpl implements AssessmentRemoteDataSource {
   @override
   Future<List<UserAssessmentModel>> getAssessments() async {
     try {
-      final response = await dio.get('/assessments');
-      return (response.data as List)
-          .map((json) => UserAssessmentModel.fromJson(json))
-          .toList();
+      return await _client.getAssessments();
     } catch (e) {
       rethrow;
     }
@@ -41,8 +35,7 @@ class AssessmentRemoteDataSourceImpl implements AssessmentRemoteDataSource {
   @override
   Future<UserAssessmentModel?> getAssessmentById(String id) async {
     try {
-      final response = await dio.get('/assessments/$id');
-      return UserAssessmentModel.fromJson(response.data);
+      return await _client.getAssessmentById(id);
     } catch (e) {
       rethrow;
     }
@@ -51,10 +44,7 @@ class AssessmentRemoteDataSourceImpl implements AssessmentRemoteDataSource {
   @override
   Future<void> updateAssessment(UserAssessmentModel assessment) async {
     try {
-      await dio.put(
-        '/assessments/${assessment.id}',
-        data: assessment.toJson(),
-      );
+      await _client.updateAssessment(assessment.id, assessment.toJson());
     } catch (e) {
       rethrow;
     }
@@ -63,7 +53,7 @@ class AssessmentRemoteDataSourceImpl implements AssessmentRemoteDataSource {
   @override
   Future<void> deleteAssessment(String id) async {
     try {
-      await dio.delete('/assessments/$id');
+      await _client.deleteAssessment(id);
     } catch (e) {
       rethrow;
     }

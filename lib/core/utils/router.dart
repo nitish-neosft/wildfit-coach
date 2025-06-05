@@ -7,19 +7,20 @@ import '../../features/assessment/presentation/screens/cardio_fitness_screen.dar
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/members/presentation/screens/member_details_screen.dart';
-import '../../features/members/presentation/screens/workout_plan_screen.dart';
 import '../../features/members/presentation/screens/nutrition_plan_screen.dart';
 import '../../features/auth/data/services/user_service.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../features/members/bloc/member_bloc.dart';
-import '../../features/members/bloc/workout_plan_bloc.dart';
-import '../../features/members/bloc/nutrition_plan_bloc.dart';
-import '../../features/members/data/member_repository.dart';
 import '../../features/assessment/presentation/bloc/blood_pressure/blood_pressure_bloc.dart';
 import '../../features/assessment/presentation/bloc/cardio_fitness/cardio_fitness_bloc.dart';
 import '../../features/assessment/presentation/bloc/muscular_flexibility/muscular_flexibility_bloc.dart';
 import '../../features/assessment/presentation/bloc/detailed_measurements/detailed_measurements_bloc.dart';
+import '../../features/profile/presentation/bloc/profile_bloc.dart';
+import '../../features/members/presentation/bloc/nutrition_plan/nutrition_plan_bloc.dart';
+import '../../features/members/presentation/bloc/nutrition_plan/nutrition_plan_event.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../core/di/injection_container.dart' as di;
 
 GoRouter createRouter(UserService userService) => GoRouter(
@@ -52,6 +53,14 @@ GoRouter createRouter(UserService userService) => GoRouter(
           builder: (context, state) => const DashboardScreen(),
         ),
         GoRoute(
+          path: '/profile',
+          builder: (context, state) => BlocProvider(
+            create: (context) =>
+                di.sl<ProfileBloc>()..add(LoadProfileSettings()),
+            child: const ProfilePage(),
+          ),
+        ),
+        GoRoute(
           path: '/member-details/:id',
           builder: (context, state) => MemberDetailsScreen(
             memberId: state.pathParameters['id']!,
@@ -67,19 +76,9 @@ GoRouter createRouter(UserService userService) => GoRouter(
           ),
         ),
         GoRoute(
-          path: '/workout/new',
-          builder: (context, state) => BlocProvider(
-            create: (context) => WorkoutPlanBloc(),
-            child: const WorkoutPlanScreen(
-              memberId: '',
-              planId: 'new',
-            ),
-          ),
-        ),
-        GoRoute(
           path: '/nutrition/plan',
           builder: (context, state) => BlocProvider(
-            create: (context) => NutritionPlanBloc(),
+            create: (context) => di.sl<NutritionPlanBloc>(),
             child: const NutritionPlanScreen(
               memberId: '',
               planId: 'new',
@@ -100,30 +99,12 @@ GoRouter createRouter(UserService userService) => GoRouter(
           },
         ),
         GoRoute(
-          path: '/workout-plan/:planId',
-          builder: (context, state) {
-            final Map<String, dynamic> extra =
-                state.extra as Map<String, dynamic>;
-            return BlocProvider(
-              create: (context) => WorkoutPlanBloc()
-                ..add(LoadWorkoutPlan(
-                  planId: state.pathParameters['planId']!,
-                  memberId: extra['memberId'],
-                )),
-              child: WorkoutPlanScreen(
-                memberId: extra['memberId'],
-                planId: state.pathParameters['planId']!,
-              ),
-            );
-          },
-        ),
-        GoRoute(
           path: '/nutrition-plan/:planId',
           builder: (context, state) {
             final Map<String, dynamic> extra =
                 state.extra as Map<String, dynamic>;
             return BlocProvider(
-              create: (context) => NutritionPlanBloc()
+              create: (context) => di.sl<NutritionPlanBloc>()
                 ..add(LoadNutritionPlan(
                   planId: state.pathParameters['planId']!,
                   memberId: extra['memberId'],

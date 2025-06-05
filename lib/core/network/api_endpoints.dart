@@ -1,6 +1,5 @@
 class ApiEndpoints {
-  static const String baseUrl =
-      'https://api.wildfit-coach.com/v1'; // Replace with your actual base URL
+  static const String baseUrl = 'http://localhost:3000/v1'; // Development URL
 
   // Auth endpoints
   static const String login = '/auth/login';
@@ -25,4 +24,10 @@ class ApiEndpoints {
   static const String assessments = '/assessments';
   static const String assessmentDetails =
       '/assessments/'; // Append assessment ID
+
+  // Workout plan endpoints
+  static const String workoutPlans = '/workout-plans';
+  static const String memberWorkoutPlans = '/members/{memberId}/workout-plans';
+  static const String workoutPlanDetails = '/workout-plans/'; // Append plan ID
+  static const String workoutPlanProgress = '/workout-plans/{id}/progress';
 }

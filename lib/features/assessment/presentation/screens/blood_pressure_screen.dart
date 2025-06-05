@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../widgets/measurement_input_field.dart';
 import '../bloc/blood_pressure/blood_pressure_bloc.dart';
 import '../../domain/usecases/save_assessment.dart';
 
@@ -24,14 +25,6 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
   final _pulseController = TextEditingController();
   final _restingHeartRateController = TextEditingController();
 
-  final List<String> _bpCategories = [
-    'Normal',
-    'Elevated',
-    'Stage 1 Hypertension',
-    'Stage 2 Hypertension',
-    'Hypertensive Crisis',
-  ];
-
   @override
   void dispose() {
     _systolicController.dispose();
@@ -43,54 +36,58 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
 
   void _handleNext() {
     if (_formKey.currentState!.validate()) {
+      final systolic = int.parse(_systolicController.text);
+      final diastolic = int.parse(_diastolicController.text);
+      final pulse = int.parse(_pulseController.text);
+      final restingHeartRate = int.parse(_restingHeartRateController.text);
+
+      String bpCategory;
+      if (systolic < 120 && diastolic < 80) {
+        bpCategory = 'Normal';
+      } else if (systolic < 130 && diastolic < 80) {
+        bpCategory = 'Elevated';
+      } else if (systolic < 140 || diastolic < 90) {
+        bpCategory = 'Stage 1 Hypertension';
+      } else {
+        bpCategory = 'Stage 2 Hypertension';
+      }
+
       context.read<BloodPressureBloc>().add(
             SaveBloodPressure(
-              systolic: int.parse(_systolicController.text),
-              diastolic: int.parse(_diastolicController.text),
-              pulse: int.parse(_pulseController.text),
-              restingHeartRate: int.parse(_restingHeartRateController.text),
-              bpCategory: context.read<BloodPressureBloc>().state
-                      is BloodPressureInitial
-                  ? (context.read<BloodPressureBloc>().state
-                          as BloodPressureInitial)
-                      .bpCategory
-                  : 'Normal',
+              systolic: systolic,
+              diastolic: diastolic,
+              pulse: pulse,
+              restingHeartRate: restingHeartRate,
+              bpCategory: bpCategory,
               date: widget.selectedMonth ?? DateTime.now(),
             ),
           );
     }
   }
 
-  String? _validateNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'This field is required';
-    }
-    if (double.tryParse(value) == null) {
-      return 'Please enter a valid number';
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BloodPressureBloc, BloodPressureState>(
-      listener: (context, state) {
-        if (state is BloodPressureSaved) {
-          context.pop();
-        } else if (state is BloodPressureError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Blood Pressure Assessment'),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
+    return BlocProvider(
+      create: (context) => BloodPressureBloc(
+        saveAssessment: context.read<SaveAssessment>(),
+      ),
+      child: BlocConsumer<BloodPressureBloc, BloodPressureState>(
+        listener: (context, state) {
+          if (state is BloodPressureSaved) {
+            context.pop();
+          } else if (state is BloodPressureError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Blood Pressure'),
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Form(
                   key: _formKey,
@@ -98,7 +95,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Vital Signs',
+                        'Blood Pressure & Heart Rate',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               color: AppColors.white,
                               fontWeight: FontWeight.bold,
@@ -106,7 +103,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Enter your blood pressure readings and heart rate',
+                        'Enter your blood pressure and heart rate measurements',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: AppColors.darkGrey,
                             ),
@@ -127,32 +124,20 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
+                                  child: MeasurementInputField(
+                                    label: 'Systolic',
                                     controller: _systolicController,
-                                    keyboardType: TextInputType.number,
-                                    style:
-                                        const TextStyle(color: AppColors.white),
-                                    decoration: const InputDecoration(
-                                      labelText: 'Systolic',
-                                      suffixText: 'mmHg',
-                                      hintText: '120',
-                                    ),
-                                    validator: _validateNumber,
+                                    unit: 'mmHg',
+                                    textInputAction: TextInputAction.next,
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
-                                  child: TextFormField(
+                                  child: MeasurementInputField(
+                                    label: 'Diastolic',
                                     controller: _diastolicController,
-                                    keyboardType: TextInputType.number,
-                                    style:
-                                        const TextStyle(color: AppColors.white),
-                                    decoration: const InputDecoration(
-                                      labelText: 'Diastolic',
-                                      suffixText: 'mmHg',
-                                      hintText: '80',
-                                    ),
-                                    validator: _validateNumber,
+                                    unit: 'mmHg',
+                                    textInputAction: TextInputAction.next,
                                   ),
                                 ),
                               ],
@@ -161,81 +146,25 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: TextFormField(
+                                  child: MeasurementInputField(
+                                    label: 'Pulse',
                                     controller: _pulseController,
-                                    keyboardType: TextInputType.number,
-                                    style:
-                                        const TextStyle(color: AppColors.white),
-                                    decoration: const InputDecoration(
-                                      labelText: 'Pulse',
-                                      suffixText: 'bpm',
-                                      hintText: '72',
-                                    ),
-                                    validator: _validateNumber,
+                                    unit: 'bpm',
+                                    textInputAction: TextInputAction.next,
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
-                                  child: TextFormField(
+                                  child: MeasurementInputField(
+                                    label: 'Resting Heart Rate',
                                     controller: _restingHeartRateController,
-                                    keyboardType: TextInputType.number,
-                                    style:
-                                        const TextStyle(color: AppColors.white),
-                                    decoration: const InputDecoration(
-                                      labelText: 'Resting Heart Rate',
-                                      suffixText: 'bpm',
-                                      hintText: '65',
-                                    ),
-                                    validator: _validateNumber,
+                                    unit: 'bpm',
+                                    textInputAction: TextInputAction.done,
                                   ),
                                 ),
                               ],
                             ),
                           ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'BP Category',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCard,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.darkDivider,
-                            width: 1,
-                          ),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          value: state is BloodPressureInitial
-                              ? state.bpCategory
-                              : 'Normal',
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 16),
-                          ),
-                          dropdownColor: AppColors.darkCard,
-                          style: const TextStyle(color: AppColors.white),
-                          items: _bpCategories.map((category) {
-                            return DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              context.read<BloodPressureBloc>().add(
-                                    UpdateBPCategory(value),
-                                  );
-                            }
-                          },
                         ),
                       ),
                       const SizedBox(height: 48),
@@ -265,7 +194,7 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                               const SizedBox(width: 12),
                             ],
                             const Text(
-                              'Save',
+                              'Continue',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -283,9 +212,9 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

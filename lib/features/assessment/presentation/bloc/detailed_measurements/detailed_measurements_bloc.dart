@@ -7,6 +7,7 @@ import '../../../domain/entities/cardio_fitness.dart';
 import '../../../domain/entities/muscular_endurance.dart';
 import '../../../domain/entities/flexibility_tests.dart';
 import '../../../domain/usecases/save_assessment.dart';
+import '../../../../../core/error/failures.dart';
 
 part 'detailed_measurements_event.dart';
 part 'detailed_measurements_state.dart';
@@ -26,54 +27,62 @@ class DetailedMeasurementsBloc
     Emitter<DetailedMeasurementsState> emit,
   ) async {
     emit(DetailedMeasurementsSaving());
-    try {
-      final bodyMeasurements = BodyMeasurements(
-        height: event.height,
-        weight: event.weight,
-        arms: event.arms,
-        calf: event.calf,
-        forearm: event.forearm,
-        midThigh: event.midThigh,
-        chest: event.chest,
-        waist: event.waist,
-        hips: event.hips,
-        neck: event.neck,
-      );
 
-      final assessment = UserAssessment(
-        name: 'Detailed Measurements Assessment ${event.date}',
-        vitalSigns: const VitalSigns(
-          bloodPressure: '',
-          restingHeartRate: 0,
-          bpCategory: '',
-        ),
-        bodyMeasurements: bodyMeasurements,
-        cardioFitness: const CardioFitness(
-          vo2Max: 0,
-          rockportTestResult: '',
-          ymcaStepTestResult: '',
-          ymcaHeartRate: 0,
-        ),
-        muscularEndurance: const MuscularEndurance(
-          pushUps: 0,
-          pushUpType: '',
-          squats: 0,
-          squatType: '',
-          pullUps: 0,
-        ),
-        flexibilityTests: const FlexibilityTests(
-          quadriceps: false,
-          hamstring: false,
-          hipFlexors: false,
-          shoulderMobility: false,
-          sitAndReach: false,
-        ),
-      );
+    final bodyMeasurements = BodyMeasurements(
+      height: event.height,
+      weight: event.weight,
+      arms: event.arms,
+      calf: event.calf,
+      forearm: event.forearm,
+      midThigh: event.midThigh,
+      chest: event.chest,
+      waist: event.waist,
+      hips: event.hips,
+      neck: event.neck,
+    );
 
-      await saveAssessment(assessment);
-      emit(DetailedMeasurementsSaved());
-    } catch (e) {
-      emit(DetailedMeasurementsError(e.toString()));
-    }
+    final assessment = UserAssessment(
+      name: 'Detailed Measurements Assessment ${event.date}',
+      vitalSigns: const VitalSigns(
+        bloodPressure: '',
+        restingHeartRate: 0,
+        bpCategory: '',
+      ),
+      bodyMeasurements: bodyMeasurements,
+      cardioFitness: const CardioFitness(
+        vo2Max: 0,
+        rockportTestResult: '',
+        ymcaStepTestResult: '',
+        ymcaHeartRate: 0,
+      ),
+      muscularEndurance: const MuscularEndurance(
+        pushUps: 0,
+        pushUpType: '',
+        squats: 0,
+        squatType: '',
+        pullUps: 0,
+      ),
+      flexibilityTests: const FlexibilityTests(
+        quadriceps: false,
+        hamstring: false,
+        hipFlexors: false,
+        shoulderMobility: false,
+        sitAndReach: false,
+      ),
+    );
+
+    final result = await saveAssessment(SaveParams(assessment: assessment));
+    result.fold(
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(DetailedMeasurementsError('Server error: ${failure.message}'));
+        } else if (failure is NetworkFailure) {
+          emit(DetailedMeasurementsError('Network error: ${failure.message}'));
+        } else {
+          emit(DetailedMeasurementsError(failure.message));
+        }
+      },
+      (_) => emit(DetailedMeasurementsSaved()),
+    );
   }
 }

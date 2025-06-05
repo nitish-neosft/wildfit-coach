@@ -7,6 +7,7 @@ import 'package:wildfit_coach/features/assessment/domain/entities/vital_signs.da
 import '../../../domain/entities/user_assessment.dart';
 import '../../../domain/entities/cardio_fitness.dart';
 import '../../../domain/usecases/save_assessment.dart';
+import '../../../../../core/error/failures.dart';
 
 part 'cardio_fitness_event.dart';
 part 'cardio_fitness_state.dart';
@@ -49,27 +50,35 @@ class CardioFitnessBloc extends Bloc<CardioFitnessEvent, CardioFitnessState> {
     Emitter<CardioFitnessState> emit,
   ) async {
     emit(CardioFitnessSaving());
-    try {
-      final cardioFitness = CardioFitness(
-        vo2Max: event.vo2max,
-        rockportTestResult: event.rockportFitnessCategory,
-        ymcaStepTestResult: event.ymcaFitnessCategory,
-        ymcaHeartRate: event.ymcaHeartRate,
-      );
 
-      final assessment = UserAssessment(
-        name: 'Cardio Fitness Assessment ${event.date}',
-        vitalSigns: event.vitalSigns,
-        bodyMeasurements: event.bodyMeasurements,
-        cardioFitness: cardioFitness,
-        muscularEndurance: event.muscularEndurance,
-        flexibilityTests: event.flexibilityTests,
-      );
+    final cardioFitness = CardioFitness(
+      vo2Max: event.vo2max,
+      rockportTestResult: event.rockportFitnessCategory,
+      ymcaStepTestResult: event.ymcaFitnessCategory,
+      ymcaHeartRate: event.ymcaHeartRate,
+    );
 
-      await saveAssessment(assessment);
-      emit(CardioFitnessSaved());
-    } catch (e) {
-      emit(CardioFitnessError(e.toString()));
-    }
+    final assessment = UserAssessment(
+      name: 'Cardio Fitness Assessment ${event.date}',
+      vitalSigns: event.vitalSigns,
+      bodyMeasurements: event.bodyMeasurements,
+      cardioFitness: cardioFitness,
+      muscularEndurance: event.muscularEndurance,
+      flexibilityTests: event.flexibilityTests,
+    );
+
+    final result = await saveAssessment(SaveParams(assessment: assessment));
+    result.fold(
+      (failure) {
+        if (failure is ServerFailure) {
+          emit(CardioFitnessError('Server error: ${failure.message}'));
+        } else if (failure is NetworkFailure) {
+          emit(CardioFitnessError('Network error: ${failure.message}'));
+        } else {
+          emit(CardioFitnessError(failure.message));
+        }
+      },
+      (_) => emit(CardioFitnessSaved()),
+    );
   }
 }

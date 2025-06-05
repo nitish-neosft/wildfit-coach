@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors.dart';
-import '../../../domain/models/member.dart';
+import '../../../domain/entities/member.dart';
 
 class MemberAppBar extends StatelessWidget {
   final Member member;

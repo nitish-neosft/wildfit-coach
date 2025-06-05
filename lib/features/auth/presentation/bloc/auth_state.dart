@@ -34,6 +34,14 @@ class AuthError extends AuthState {
 
 class PasswordResetRequested extends AuthState {}
 
+class PasswordResetSuccess extends AuthState {
+  const PasswordResetSuccess();
+}
+
+class PasswordResetFailure extends AuthState {
+  const PasswordResetFailure();
+}
+
 class PasswordResetError extends AuthState {
   final String message;
 

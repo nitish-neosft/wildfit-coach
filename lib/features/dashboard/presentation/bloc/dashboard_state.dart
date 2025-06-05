@@ -46,3 +46,30 @@ class DashboardError extends DashboardState {
   @override
   List<Object?> get props => [message];
 }
+
+class DashboardAuthError extends DashboardState {
+  final String message;
+
+  const DashboardAuthError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class DashboardNetworkError extends DashboardState {
+  final String message;
+
+  const DashboardNetworkError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class MemberNotFound extends DashboardState {
+  final String message;
+
+  const MemberNotFound(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

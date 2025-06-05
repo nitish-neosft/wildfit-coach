@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import '../../../../core/error/failures.dart';
 import '../../domain/entities/dashboard_data.dart';
 import '../../domain/entities/dashboard_member.dart';
 import '../../domain/usecases/get_dashboard_data.dart';
@@ -29,15 +30,19 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     Emitter<DashboardState> emit,
   ) async {
     emit(DashboardLoading());
-    try {
-      final result = await getDashboardData();
-      result.fold(
-        (failure) => emit(DashboardError(failure.message)),
-        (dashboardData) => emit(DashboardLoaded(dashboardData)),
-      );
-    } catch (e) {
-      emit(DashboardError(e.toString()));
-    }
+    final result = await getDashboardData();
+    result.fold(
+      (failure) {
+        if (failure is UnauthorizedFailure) {
+          emit(DashboardAuthError(failure.message));
+        } else if (failure is NetworkFailure) {
+          emit(DashboardNetworkError(failure.message));
+        } else {
+          emit(DashboardError(failure.message));
+        }
+      },
+      (dashboardData) => emit(DashboardLoaded(dashboardData)),
+    );
   }
 
   Future<void> _onLoadMembers(
@@ -45,15 +50,19 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     Emitter<DashboardState> emit,
   ) async {
     emit(DashboardLoading());
-    try {
-      final result = await getMembers();
-      result.fold(
-        (failure) => emit(DashboardError(failure.message)),
-        (members) => emit(MembersLoaded(members)),
-      );
-    } catch (e) {
-      emit(DashboardError(e.toString()));
-    }
+    final result = await getMembers();
+    result.fold(
+      (failure) {
+        if (failure is UnauthorizedFailure) {
+          emit(DashboardAuthError(failure.message));
+        } else if (failure is NetworkFailure) {
+          emit(DashboardNetworkError(failure.message));
+        } else {
+          emit(DashboardError(failure.message));
+        }
+      },
+      (members) => emit(MembersLoaded(members)),
+    );
   }
 
   Future<void> _onLoadMemberDetails(
@@ -61,14 +70,20 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     Emitter<DashboardState> emit,
   ) async {
     emit(DashboardLoading());
-    try {
-      final result = await getMemberDetails(event.memberId);
-      result.fold(
-        (failure) => emit(DashboardError(failure.message)),
-        (member) => emit(MemberDetailsLoaded(member)),
-      );
-    } catch (e) {
-      emit(DashboardError(e.toString()));
-    }
+    final result = await getMemberDetails(event.memberId);
+    result.fold(
+      (failure) {
+        if (failure is UnauthorizedFailure) {
+          emit(DashboardAuthError(failure.message));
+        } else if (failure is NetworkFailure) {
+          emit(DashboardNetworkError(failure.message));
+        } else if (failure is NotFoundFailure) {
+          emit(MemberNotFound(failure.message));
+        } else {
+          emit(DashboardError(failure.message));
+        }
+      },
+      (member) => emit(MemberDetailsLoaded(member)),
+    );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/constants/colors.dart';
-import '../../../domain/models/member.dart';
+import '../../../domain/entities/member.dart';
 
 class MemberPlansSection extends StatelessWidget {
   final Member member;

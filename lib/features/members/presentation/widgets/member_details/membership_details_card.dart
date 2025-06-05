@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wildfit_coach/features/members/domain/models/activity.dart';
 import '../../../../../core/constants/colors.dart';
-import '../../../domain/models/member.dart';
+import '../../../domain/entities/member.dart';
 
 class MembershipDetailsCard extends StatelessWidget {
   final Member member;
@@ -112,19 +111,6 @@ class MembershipDetailsCard extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  IconData _getActivityIcon(ActivityType type) {
-    switch (type) {
-      case ActivityType.workout:
-        return Icons.fitness_center;
-      case ActivityType.cardio:
-        return Icons.directions_run;
-      case ActivityType.class_:
-        return Icons.group;
-      case ActivityType.assessment:
-        return Icons.assessment;
-    }
   }
 
   Color _getMembershipStatusColor() {
