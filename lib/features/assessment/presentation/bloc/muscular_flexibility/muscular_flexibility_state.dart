@@ -4,28 +4,33 @@ abstract class MuscularFlexibilityState extends Equatable {
   const MuscularFlexibilityState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class MuscularFlexibilityInitial extends MuscularFlexibilityState {
-  final String pushUpType;
-  final String squatType;
+  final String? pushUpType;
+  final String? squatType;
   final Map<String, bool> flexibilityTests;
 
   const MuscularFlexibilityInitial({
-    this.pushUpType = 'Standard',
-    this.squatType = 'Body Weight',
-    this.flexibilityTests = const {
-      'quadriceps': false,
-      'hamstring': false,
-      'hipFlexors': false,
-      'shoulderMobility': false,
-      'sitAndReach': false,
-    },
-  });
+    this.pushUpType,
+    this.squatType,
+    Map<String, bool>? flexibilityTests,
+  }) : flexibilityTests = flexibilityTests ??
+            const {
+              'quadriceps': false,
+              'hamstring': false,
+              'hipFlexors': false,
+              'shoulderMobility': false,
+              'sitAndReach': false,
+            };
 
   @override
-  List<Object> get props => [pushUpType, squatType, flexibilityTests];
+  List<Object> get props => [
+        pushUpType ?? '',
+        squatType ?? '',
+        flexibilityTests,
+      ];
 
   MuscularFlexibilityInitial copyWith({
     String? pushUpType,

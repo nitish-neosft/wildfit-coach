@@ -21,11 +21,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, ProfileSettings>> getProfileSettings() async {
     try {
-      // For development, always use local data source
       final profileSettings = await localDataSource.getProfileSettings();
-      return Right(profileSettings.toEntity());
-    } catch (e) {
-      return const Left(ServerFailure('Failed to fetch profile settings'));
+      return Right(profileSettings);
+    } on Exception catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -36,19 +35,18 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       await localDataSource.updateNotificationSettings(
         NotificationSettingsModel(
-          checkInReminders: settings.checkInReminders,
-          checkOutReminders: settings.checkOutReminders,
-          nutritionPlanAlerts: settings.nutritionPlanAlerts,
-          fitnessTestReminders: settings.fitnessTestReminders,
-          workoutPlanAlerts: settings.workoutPlanAlerts,
-          trainerAttendanceSummary: settings.trainerAttendanceSummary,
+          memberCheckInAlerts: settings.memberCheckInAlerts,
+          memberAssessmentReminders: settings.memberAssessmentReminders,
+          memberProgressAlerts: settings.memberProgressAlerts,
+          membershipExpiryAlerts: settings.membershipExpiryAlerts,
+          newMemberAssignments: settings.newMemberAssignments,
+          staffMeetingReminders: settings.staffMeetingReminders,
           paymentReminders: settings.paymentReminders,
         ),
       );
       return const Right(null);
-    } catch (e) {
-      return const Left(
-          ServerFailure('Failed to update notification settings'));
+    } on Exception catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -57,8 +55,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       await localDataSource.updateLanguage(language);
       return const Right(null);
-    } catch (e) {
-      return const Left(ServerFailure('Failed to update language'));
+    } on Exception catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -70,8 +68,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       await localDataSource.updatePassword(currentPassword, newPassword);
       return const Right(null);
-    } catch (e) {
-      return const Left(ServerFailure('Failed to update password'));
+    } on Exception catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -88,8 +86,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
         avatar: avatar,
       );
       return const Right(null);
-    } catch (e) {
-      return const Left(ServerFailure('Failed to update profile'));
+    } on Exception catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

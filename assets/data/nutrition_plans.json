@@ -1,0 +1,238 @@
+{
+  "nutrition_plans": [
+    {
+      "id": "np1",
+      "name": "Weight Loss Plan",
+      "description": "A balanced nutrition plan focused on sustainable weight loss",
+      "member_id": "1",
+      "created_by": "coach1",
+      "type": "weightLoss",
+      "meals_per_day": 5,
+      "created_at": "2024-03-01T00:00:00Z",
+      "start_date": "2024-03-01T00:00:00Z",
+      "end_date": "2024-06-01T00:00:00Z",
+      "is_active": true,
+      "progress": 0.3,
+      "metadata": {},
+      "target_calories": 2000,
+      "target_macros": {
+        "protein": 150.0,
+        "carbs": 200.0,
+        "fats": 67.0
+      },
+      "meals": [
+        {
+          "id": "m1",
+          "name": "Breakfast",
+          "description": "High protein breakfast to start the day",
+          "scheduled_time": "08:00",
+          "calories": 400,
+          "macros": {
+            "protein": 30.0,
+            "carbs": 40.0,
+            "fats": 13.0
+          },
+          "is_completed": false,
+          "foods": [
+            {
+              "id": "f1",
+              "name": "Oatmeal",
+              "description": "Steel cut oats",
+              "portion": 100,
+              "unit": "g",
+              "calories": 150,
+              "nutrients": {
+                "protein": 5.0,
+                "carbs": 25.0,
+                "fats": 3.0,
+                "fiber": 4.0
+              },
+              "category": "grains"
+            },
+            {
+              "id": "f2",
+              "name": "Protein Shake",
+              "description": "Whey protein with almond milk",
+              "portion": 300,
+              "unit": "ml",
+              "calories": 120,
+              "nutrients": {
+                "protein": 25.0,
+                "carbs": 5.0,
+                "fats": 2.0,
+                "fiber": 0.0
+              },
+              "category": "proteins"
+            },
+            {
+              "id": "f3",
+              "name": "Banana",
+              "description": "Medium sized banana",
+              "portion": 1,
+              "unit": "piece",
+              "calories": 105,
+              "nutrients": {
+                "protein": 1.0,
+                "carbs": 27.0,
+                "fats": 0.0,
+                "fiber": 3.0
+              },
+              "category": "fruits"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "np2",
+      "name": "Muscle Gain Plan",
+      "description": "High protein nutrition plan for muscle growth",
+      "member_id": "2",
+      "created_by": "coach1",
+      "type": "muscleGain",
+      "meals_per_day": 6,
+      "created_at": "2024-03-15T00:00:00Z",
+      "start_date": "2024-03-15T00:00:00Z",
+      "end_date": "2024-06-15T00:00:00Z",
+      "is_active": true,
+      "progress": 0.2,
+      "metadata": {},
+      "target_calories": 2800,
+      "target_macros": {
+        "protein": 200.0,
+        "carbs": 300.0,
+        "fats": 89.0
+      },
+      "meals": [
+        {
+          "id": "m2",
+          "name": "Post-Workout Meal",
+          "description": "High protein meal for muscle recovery",
+          "scheduled_time": "10:00",
+          "calories": 500,
+          "macros": {
+            "protein": 40.0,
+            "carbs": 60.0,
+            "fats": 15.0
+          },
+          "is_completed": false,
+          "foods": [
+            {
+              "id": "f4",
+              "name": "Chicken Breast",
+              "description": "Grilled chicken breast",
+              "portion": 200,
+              "unit": "g",
+              "calories": 330,
+              "nutrients": {
+                "protein": 62.0,
+                "carbs": 0.0,
+                "fats": 7.0,
+                "fiber": 0.0
+              },
+              "category": "proteins"
+            },
+            {
+              "id": "f5",
+              "name": "Brown Rice",
+              "description": "Steamed brown rice",
+              "portion": 1,
+              "unit": "cup",
+              "calories": 170,
+              "nutrients": {
+                "protein": 5.0,
+                "carbs": 35.0,
+                "fats": 2.0,
+                "fiber": 4.0
+              },
+              "category": "grains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "np3",
+      "name": "Maintenance Plan",
+      "description": "Balanced nutrition plan for maintaining current weight",
+      "member_id": "2",
+      "created_by": "coach1",
+      "type": "maintenance",
+      "meals_per_day": 4,
+      "created_at": "2024-03-20T00:00:00Z",
+      "start_date": "2024-04-01T00:00:00Z",
+      "end_date": "2024-07-01T00:00:00Z",
+      "is_active": true,
+      "progress": 0.0,
+      "metadata": {},
+      "target_calories": 2200,
+      "target_macros": {
+        "protein": 165.0,
+        "carbs": 220.0,
+        "fats": 73.0
+      },
+      "meals": [
+        {
+          "id": "m3",
+          "name": "Lunch",
+          "description": "Balanced lunch with lean protein and complex carbs",
+          "scheduled_time": "13:00",
+          "calories": 600,
+          "macros": {
+            "protein": 45.0,
+            "carbs": 60.0,
+            "fats": 20.0
+          },
+          "is_completed": false,
+          "foods": [
+            {
+              "id": "f6",
+              "name": "Salmon",
+              "description": "Grilled salmon fillet",
+              "portion": 150,
+              "unit": "g",
+              "calories": 350,
+              "nutrients": {
+                "protein": 39.0,
+                "carbs": 0.0,
+                "fats": 22.0,
+                "fiber": 0.0
+              },
+              "category": "proteins"
+            },
+            {
+              "id": "f7",
+              "name": "Sweet Potato",
+              "description": "Baked sweet potato",
+              "portion": 1,
+              "unit": "medium",
+              "calories": 150,
+              "nutrients": {
+                "protein": 2.0,
+                "carbs": 34.0,
+                "fats": 0.0,
+                "fiber": 4.0
+              },
+              "category": "vegetables"
+            },
+            {
+              "id": "f8",
+              "name": "Mixed Vegetables",
+              "description": "Steamed mixed vegetables",
+              "portion": 2,
+              "unit": "cups",
+              "calories": 100,
+              "nutrients": {
+                "protein": 4.0,
+                "carbs": 20.0,
+                "fats": 1.0,
+                "fiber": 8.0
+              },
+              "category": "vegetables"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

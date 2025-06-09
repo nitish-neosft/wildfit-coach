@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:wildfit_coach/features/members/domain/entities/member.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/dashboard_data.dart';
-import '../../domain/entities/dashboard_member.dart';
 import '../../domain/usecases/get_dashboard_data.dart';
 import '../../domain/usecases/get_members.dart';
 import '../../domain/usecases/get_member_details.dart';

@@ -4,12 +4,16 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../widgets/measurement_input_field.dart';
 import '../bloc/detailed_measurements/detailed_measurements_bloc.dart';
-import '../../domain/usecases/save_assessment.dart';
+import '../../../../core/di/injection_container.dart' as di;
+import '../../domain/entities/vital_signs.dart';
+import '../../domain/entities/body_measurements.dart';
 
 class DetailedMeasurementsScreen extends StatefulWidget {
+  final String memberId;
   final DateTime? selectedMonth;
 
   const DetailedMeasurementsScreen({
+    required this.memberId,
     super.key,
     this.selectedMonth,
   });
@@ -54,17 +58,23 @@ class _DetailedMeasurementsScreenState
     if (_formKey.currentState!.validate()) {
       context.read<DetailedMeasurementsBloc>().add(
             SaveDetailedMeasurements(
-              height: double.parse(_heightController.text),
-              weight: double.parse(_weightController.text),
-              arms: double.parse(_armController.text),
-              calf: double.parse(_calfController.text),
-              forearm: double.parse(_forearmController.text),
-              midThigh: double.parse(_midThighController.text),
-              chest: double.parse(_chestController.text),
-              waist: double.parse(_waistController.text),
-              hips: double.parse(_hipsController.text),
-              neck: double.parse(_neckController.text),
-              date: widget.selectedMonth ?? DateTime.now(),
+              vitalSigns: VitalSigns(
+                bloodPressure: '',
+                restingHeartRate: 0,
+                bpCategory: '',
+              ),
+              bodyMeasurements: BodyMeasurements(
+                height: double.parse(_heightController.text),
+                weight: double.parse(_weightController.text),
+                arms: double.parse(_armController.text),
+                calf: double.parse(_calfController.text),
+                forearm: double.parse(_forearmController.text),
+                midThigh: double.parse(_midThighController.text),
+                chest: double.parse(_chestController.text),
+                waist: double.parse(_waistController.text),
+                hips: double.parse(_hipsController.text),
+                neck: double.parse(_neckController.text),
+              ),
             ),
           );
     }
@@ -74,7 +84,8 @@ class _DetailedMeasurementsScreenState
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => DetailedMeasurementsBloc(
-        saveAssessment: context.read<SaveAssessment>(),
+        saveAssessment: di.sl(),
+        memberId: widget.memberId,
       ),
       child: BlocConsumer<DetailedMeasurementsBloc, DetailedMeasurementsState>(
         listener: (context, state) {

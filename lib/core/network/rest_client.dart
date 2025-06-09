@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:wildfit_coach/features/dashboard/data/models/dashboard_member_model.dart';
-import 'package:wildfit_coach/features/members/data/models/workout_plan_model.dart';
-import '../error/exceptions.dart';
+import 'package:wildfit_coach/features/members/data/models/member_model.dart';
 import '../../features/auth/data/models/user_model.dart';
 import '../../features/dashboard/data/models/dashboard_data_model.dart';
 import '../../features/profile/data/models/profile_settings_model.dart';
@@ -33,7 +32,7 @@ abstract class RestClient {
   Future<DashboardDataModel> getDashboardData();
 
   @GET(ApiEndpoints.members)
-  Future<List<DashboardMemberModel>> getMembers();
+  Future<List<MemberModel>> getMembers();
 
   @GET("${ApiEndpoints.memberDetails}{id}")
   Future<DashboardMemberModel> getMemberDetails(@Path("id") String id);
@@ -72,25 +71,61 @@ abstract class RestClient {
   @DELETE("${ApiEndpoints.assessmentDetails}{id}")
   Future<void> deleteAssessment(@Path("id") String id);
 
-  // Workout plan endpoints
-  @GET(ApiEndpoints.memberWorkoutPlans)
-  Future<List<WorkoutPlanModel>> getMemberWorkoutPlans(
-      @Path("memberId") String memberId);
+  // Member endpoints
+  @POST(ApiEndpoints.members)
+  Future<MemberModel> createMember(@Body() Map<String, dynamic> member);
 
-  @GET("${ApiEndpoints.workoutPlanDetails}{id}")
-  Future<WorkoutPlanModel> getWorkoutPlan(@Path("id") String id);
+  @DELETE("${ApiEndpoints.members}{id}")
+  Future<void> deleteMember(@Path("id") String id);
 
-  @POST(ApiEndpoints.workoutPlans)
-  Future<WorkoutPlanModel> createWorkoutPlan(@Body() Map<String, dynamic> plan);
+  @GET("${ApiEndpoints.members}{id}")
+  Future<MemberModel> getMember(@Path("id") String id);
 
-  @PUT("${ApiEndpoints.workoutPlanDetails}{id}")
-  Future<WorkoutPlanModel> updateWorkoutPlan(
-      @Path("id") String id, @Body() Map<String, dynamic> plan);
+  @PUT("${ApiEndpoints.members}{id}")
+  Future<MemberModel> updateMember(
+      @Path("id") String id, @Body() Map<String, dynamic> member);
 
-  @DELETE("${ApiEndpoints.workoutPlanDetails}{id}")
-  Future<void> deleteWorkoutPlan(@Path("id") String id);
+  @PUT("${ApiEndpoints.members}{id}/goals")
+  Future<void> updateMemberGoals(
+      @Path("id") String id, @Body() Map<String, dynamic> goals);
 
-  @PUT(ApiEndpoints.workoutPlanProgress)
-  Future<void> updateWorkoutProgress(
-      @Path("id") String id, @Body() Map<String, dynamic> progress);
+  @POST("${ApiEndpoints.members}{id}/check-in")
+  Future<void> checkIn(@Path("id") String id);
+
+  @PUT("${ApiEndpoints.members}{id}/measurements")
+  Future<void> updateMemberMeasurements(
+      @Path("id") String id, @Body() Map<String, dynamic> measurements);
+
+  @POST("${ApiEndpoints.members}{id}/assessments")
+  Future<void> addAssessment(
+      @Path("id") String id, @Body() Map<String, dynamic> assessment);
+
+  @POST("${ApiEndpoints.members}{id}/workout-cards")
+  Future<void> addWorkoutCard(
+      @Path("id") String id, @Body() Map<String, dynamic> workoutCard);
+
+  @PUT("${ApiEndpoints.members}{id}/workout-cards/{cardId}")
+  Future<void> updateWorkoutCard(@Path("id") String id,
+      @Path("cardId") String cardId, @Body() Map<String, dynamic> workoutCard);
+
+  @DELETE("${ApiEndpoints.members}{id}/workout-cards/{cardId}")
+  Future<void> deleteWorkoutCard(
+      @Path("id") String id, @Path("cardId") String cardId);
+
+  @POST("${ApiEndpoints.members}{id}/nutrition-cards")
+  Future<void> addNutritionCard(
+      @Path("id") String id, @Body() Map<String, dynamic> nutritionCard);
+
+  @PUT("${ApiEndpoints.members}{id}/nutrition-cards/{cardId}")
+  Future<void> updateNutritionCard(
+      @Path("id") String id,
+      @Path("cardId") String cardId,
+      @Body() Map<String, dynamic> nutritionCard);
+
+  @DELETE("${ApiEndpoints.members}{id}/nutrition-cards/{cardId}")
+  Future<void> deleteNutritionCard(
+      @Path("id") String id, @Path("cardId") String cardId);
+
+  @GET('/members/pending-assessments')
+  Future<List<MemberModel>> getMembersWithPendingAssessments();
 }

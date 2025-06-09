@@ -62,6 +62,8 @@ class MemberDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     MembershipDetailsCard(member: member),
                     const SizedBox(height: 16),
+                    MemberCardsSection(member: member),
+                    const SizedBox(height: 16),
                     _buildHealthMetrics(member),
                     const SizedBox(height: 16),
                     _buildGoals(member),
@@ -101,6 +103,38 @@ class MemberDetailsScreen extends StatelessWidget {
                       onAddTap: () =>
                           _showMonthPicker(context, '/detailed-measurements'),
                     ),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.fitness_center),
+                        title: const Text('Workout Plans'),
+                        subtitle: Text(
+                          member.activePrograms != null &&
+                                  member.activePrograms! > 0
+                              ? '${member.activePrograms} Active Plans'
+                              : 'No active plans',
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () =>
+                            context.push('/workout-plans/member/${member.id}'),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.restaurant_menu),
+                        title: const Text('Nutrition Plans'),
+                        subtitle: Text(
+                          member.activeNutritionPlans != null &&
+                                  member.activeNutritionPlans! > 0
+                              ? '${member.activeNutritionPlans} Active Plans'
+                              : 'No active plans',
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context
+                            .push('/nutrition-plans/member/${member.id}'),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               );

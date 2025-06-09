@@ -30,4 +30,12 @@ class ApiEndpoints {
   static const String memberWorkoutPlans = '/members/{memberId}/workout-plans';
   static const String workoutPlanDetails = '/workout-plans/'; // Append plan ID
   static const String workoutPlanProgress = '/workout-plans/{id}/progress';
+
+  // Nutrition plan endpoints
+  static const String nutritionPlans = '/nutrition-plans';
+  static const String memberNutritionPlans =
+      '/members/{memberId}/nutrition-plans';
+  static const String nutritionPlanDetails =
+      '/nutrition-plans/'; // Append plan ID
+  static const String nutritionPlanProgress = '/nutrition-plans/{id}/progress';
 }

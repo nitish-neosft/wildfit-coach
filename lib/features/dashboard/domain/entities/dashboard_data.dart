@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'dashboard_member.dart';
+import 'package:wildfit_coach/features/members/domain/entities/member.dart';
 
 class DashboardStats extends Equatable {
   final int activeClients;
@@ -87,7 +87,7 @@ class UpcomingSession extends Equatable {
 
 class DashboardData extends Equatable {
   final DashboardStats stats;
-  final List<DashboardMember> members;
+  final List<Member> members;
   final List<DashboardActivity> activities;
   final List<UpcomingSession> upcomingSessions;
 

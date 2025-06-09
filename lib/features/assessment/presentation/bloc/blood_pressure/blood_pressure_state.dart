@@ -4,24 +4,36 @@ abstract class BloodPressureState extends Equatable {
   const BloodPressureState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class BloodPressureInitial extends BloodPressureState {
   final String bpCategory;
+  final int systolic;
+  final int diastolic;
+  final int restingHeartRate;
 
   const BloodPressureInitial({
-    this.bpCategory = 'Normal',
+    required this.bpCategory,
+    required this.systolic,
+    required this.diastolic,
+    required this.restingHeartRate,
   });
 
   @override
-  List<Object> get props => [bpCategory];
+  List<Object> get props => [bpCategory, systolic, diastolic, restingHeartRate];
 
   BloodPressureInitial copyWith({
     String? bpCategory,
+    int? systolic,
+    int? diastolic,
+    int? restingHeartRate,
   }) {
     return BloodPressureInitial(
       bpCategory: bpCategory ?? this.bpCategory,
+      systolic: systolic ?? this.systolic,
+      diastolic: diastolic ?? this.diastolic,
+      restingHeartRate: restingHeartRate ?? this.restingHeartRate,
     );
   }
 }

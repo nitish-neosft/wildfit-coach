@@ -4,30 +4,45 @@ import '../../domain/entities/body_measurements.dart';
 part 'body_measurements_model.g.dart';
 
 @JsonSerializable()
-class BodyMeasurementsModel {
-  final double height;
-  final double weight;
-  final double chest;
-  final double waist;
-  final double hips;
-  final double arms;
-  final double neck;
-  final double forearm;
-  final double calf;
-  final double midThigh;
+class BodyMeasurementsModel extends BodyMeasurements {
+  const BodyMeasurementsModel({
+    required double height,
+    required double weight,
+    required double chest,
+    required double waist,
+    required double hips,
+    required double arms,
+    required double neck,
+    required double forearm,
+    required double calf,
+    required double midThigh,
+  }) : super(
+          height: height,
+          weight: weight,
+          chest: chest,
+          waist: waist,
+          hips: hips,
+          arms: arms,
+          neck: neck,
+          forearm: forearm,
+          calf: calf,
+          midThigh: midThigh,
+        );
 
-  BodyMeasurementsModel({
-    required this.height,
-    required this.weight,
-    required this.chest,
-    required this.waist,
-    required this.hips,
-    required this.arms,
-    required this.neck,
-    required this.forearm,
-    required this.calf,
-    required this.midThigh,
-  });
+  factory BodyMeasurementsModel.empty() {
+    return const BodyMeasurementsModel(
+      height: 0,
+      weight: 0,
+      chest: 0,
+      waist: 0,
+      hips: 0,
+      arms: 0,
+      neck: 0,
+      forearm: 0,
+      calf: 0,
+      midThigh: 0,
+    );
+  }
 
   factory BodyMeasurementsModel.fromJson(Map<String, dynamic> json) =>
       _$BodyMeasurementsModelFromJson(json);

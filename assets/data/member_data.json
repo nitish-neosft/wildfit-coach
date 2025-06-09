@@ -1,0 +1,124 @@
+{
+  "members": [
+    {
+      "id": "1",
+      "name": "John Smith",
+      "email": "john.smith@example.com",
+      "phone": "+1234567890",
+      "avatar": "https://example.com/avatars/john.jpg",
+      "joined_at": "2024-01-01T10:00:00Z",
+      "plan": "premium",
+      "has_assessment": true,
+      "measurements": {
+        "chest": 102,
+        "waist": 85,
+        "hips": 95,
+        "biceps": 35,
+        "thighs": 60
+      },
+      "assessments": [
+        {
+          "id": "a1",
+          "date": "2024-03-20T10:00:00Z",
+          "type": "bloodPressure",
+          "data": {
+            "systolic": 120,
+            "diastolic": 80,
+            "heartRate": 72
+          }
+        }
+      ],
+      "trainer_name": "Mike Johnson",
+      "membership_expiry_date": "2025-01-01T10:00:00Z",
+      "last_check_in": "2024-03-21T10:30:00Z",
+      "days_present": 45,
+      "today_activities": [
+        {
+          "name": "Morning Workout",
+          "type": "workout",
+          "time": "2024-03-21T08:00:00Z",
+          "data": {
+            "duration": 60,
+            "calories": 450
+          }
+        }
+      ],
+      "height": 175.0,
+      "weight": 80.5,
+      "body_fat": 18.5,
+      "muscle_mass": 65.2,
+      "bmi": 26.3,
+      "weight_goal": 75.0,
+      "body_fat_goal": 15.0,
+      "weekly_workout_goal": 4,
+      "check_ins": [
+        "2024-03-21T10:30:00Z",
+        "2024-03-20T09:45:00Z",
+        "2024-03-19T11:00:00Z"
+      ],
+      "current_streak": 3,
+      "active_programs": 2,
+      "active_nutrition_plans": 1
+    },
+    {
+      "id": "2",
+      "name": "Sarah Johnson",
+      "email": "sarah.j@example.com",
+      "phone": "+1987654321",
+      "avatar": "https://example.com/avatars/sarah.jpg",
+      "joined_at": "2024-02-01T09:00:00Z",
+      "plan": "standard",
+      "has_assessment": true,
+      "measurements": {
+        "chest": 89,
+        "waist": 71,
+        "hips": 92,
+        "biceps": 28,
+        "thighs": 55
+      },
+      "assessments": [
+        {
+          "id": "a2",
+          "date": "2024-03-19T15:00:00Z",
+          "type": "cardioFitness",
+          "data": {
+            "vo2max": 35,
+            "recoveryTime": 120,
+            "distance": 2.5
+          }
+        }
+      ],
+      "trainer_name": "Lisa Brown",
+      "membership_expiry_date": "2025-02-01T09:00:00Z",
+      "last_check_in": "2024-03-20T15:45:00Z",
+      "days_present": 32,
+      "today_activities": [
+        {
+          "name": "Yoga Class",
+          "type": "class_",
+          "time": "2024-03-20T14:00:00Z",
+          "data": {
+            "duration": 90,
+            "calories": 300
+          }
+        }
+      ],
+      "height": 165.0,
+      "weight": 65.0,
+      "body_fat": 22.0,
+      "muscle_mass": 48.5,
+      "bmi": 23.9,
+      "weight_goal": 60.0,
+      "body_fat_goal": 20.0,
+      "weekly_workout_goal": 3,
+      "check_ins": [
+        "2024-03-20T15:45:00Z",
+        "2024-03-19T14:30:00Z",
+        "2024-03-18T16:00:00Z"
+      ],
+      "current_streak": 2,
+      "active_programs": 1,
+      "active_nutrition_plans": 2
+    }
+  ]
+}

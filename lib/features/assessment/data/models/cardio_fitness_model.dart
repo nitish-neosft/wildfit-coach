@@ -4,18 +4,27 @@ import '../../domain/entities/cardio_fitness.dart';
 part 'cardio_fitness_model.g.dart';
 
 @JsonSerializable()
-class CardioFitnessModel {
-  final double vo2Max;
-  final String rockportTestResult;
-  final String ymcaStepTestResult;
-  final int ymcaHeartRate;
+class CardioFitnessModel extends CardioFitness {
+  const CardioFitnessModel({
+    required double vo2Max,
+    required String rockportTestResult,
+    required String ymcaStepTestResult,
+    required int ymcaHeartRate,
+  }) : super(
+          vo2Max: vo2Max,
+          rockportTestResult: rockportTestResult,
+          ymcaStepTestResult: ymcaStepTestResult,
+          ymcaHeartRate: ymcaHeartRate,
+        );
 
-  CardioFitnessModel({
-    required this.vo2Max,
-    required this.rockportTestResult,
-    required this.ymcaStepTestResult,
-    required this.ymcaHeartRate,
-  });
+  factory CardioFitnessModel.empty() {
+    return const CardioFitnessModel(
+      vo2Max: 0,
+      rockportTestResult: '',
+      ymcaStepTestResult: '',
+      ymcaHeartRate: 0,
+    );
+  }
 
   factory CardioFitnessModel.fromJson(Map<String, dynamic> json) =>
       _$CardioFitnessModelFromJson(json);

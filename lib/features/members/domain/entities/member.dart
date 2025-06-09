@@ -10,12 +10,8 @@ class Member extends Equatable {
   final String? avatar;
   final DateTime joinedAt;
   final String plan;
-  final bool hasWorkoutPlan;
-  final bool hasNutritionPlan;
   final bool hasAssessment;
   final Map<String, dynamic>? measurements;
-  final List<String>? workoutPlanIds;
-  final List<String>? nutritionPlanIds;
   final List<Assessment>? assessments;
   final String? trainerName;
   final DateTime membershipExpiryDate;
@@ -33,6 +29,12 @@ class Member extends Equatable {
   final List<DateTime>? checkIns;
   final int? currentStreak;
   final int? activePrograms;
+  final int? activeNutritionPlans;
+  final int? progress;
+  final String? nextSession;
+  final String? lastActivity;
+  final String? activityTime;
+  final DateTime? lastAssessmentDate;
 
   const Member({
     required this.id,
@@ -42,12 +44,8 @@ class Member extends Equatable {
     this.avatar,
     required this.joinedAt,
     required this.plan,
-    this.hasWorkoutPlan = false,
-    this.hasNutritionPlan = false,
     this.hasAssessment = false,
     this.measurements,
-    this.workoutPlanIds,
-    this.nutritionPlanIds,
     this.assessments,
     this.trainerName,
     required this.membershipExpiryDate,
@@ -65,7 +63,37 @@ class Member extends Equatable {
     this.checkIns,
     this.currentStreak,
     this.activePrograms,
+    this.activeNutritionPlans,
+    this.progress,
+    this.nextSession,
+    this.lastActivity,
+    this.activityTime,
+    this.lastAssessmentDate,
   });
+
+  bool get hasBloodPressureAssessment =>
+      assessments?.any(
+        (a) => a.type == AssessmentType.bloodPressure,
+      ) ??
+      false;
+
+  bool get hasCardioFitnessAssessment =>
+      assessments?.any(
+        (a) => a.type == AssessmentType.cardioFitness,
+      ) ??
+      false;
+
+  bool get hasMuscularFlexibilityAssessment =>
+      assessments?.any(
+        (a) => a.type == AssessmentType.muscularFlexibility,
+      ) ??
+      false;
+
+  bool get hasDetailedMeasurementsAssessment =>
+      assessments?.any(
+        (a) => a.type == AssessmentType.detailedMeasurements,
+      ) ??
+      false;
 
   @override
   List<Object?> get props => [
@@ -76,12 +104,8 @@ class Member extends Equatable {
         avatar,
         joinedAt,
         plan,
-        hasWorkoutPlan,
-        hasNutritionPlan,
         hasAssessment,
         measurements,
-        workoutPlanIds,
-        nutritionPlanIds,
         assessments,
         trainerName,
         membershipExpiryDate,
@@ -99,5 +123,81 @@ class Member extends Equatable {
         checkIns,
         currentStreak,
         activePrograms,
+        activeNutritionPlans,
+        progress,
+        nextSession,
+        lastActivity,
+        activityTime,
+        lastAssessmentDate,
       ];
+
+  Member copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? email,
+    String? avatar,
+    DateTime? joinedAt,
+    String? plan,
+    bool? hasAssessment,
+    Map<String, dynamic>? measurements,
+    List<Assessment>? assessments,
+    String? trainerName,
+    DateTime? membershipExpiryDate,
+    DateTime? lastCheckIn,
+    int? daysPresent,
+    List<Activity>? todayActivities,
+    double? height,
+    double? weight,
+    double? bodyFat,
+    double? muscleMass,
+    double? bmi,
+    double? weightGoal,
+    double? bodyFatGoal,
+    int? weeklyWorkoutGoal,
+    List<DateTime>? checkIns,
+    int? currentStreak,
+    int? activePrograms,
+    int? activeNutritionPlans,
+    int? progress,
+    String? nextSession,
+    String? lastActivity,
+    String? activityTime,
+    DateTime? lastAssessmentDate,
+  }) {
+    return Member(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      avatar: avatar ?? this.avatar,
+      joinedAt: joinedAt ?? this.joinedAt,
+      plan: plan ?? this.plan,
+      hasAssessment: hasAssessment ?? this.hasAssessment,
+      measurements: measurements ?? this.measurements,
+      assessments: assessments ?? this.assessments,
+      trainerName: trainerName ?? this.trainerName,
+      membershipExpiryDate: membershipExpiryDate ?? this.membershipExpiryDate,
+      lastCheckIn: lastCheckIn ?? this.lastCheckIn,
+      daysPresent: daysPresent ?? this.daysPresent,
+      todayActivities: todayActivities ?? this.todayActivities,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      bodyFat: bodyFat ?? this.bodyFat,
+      muscleMass: muscleMass ?? this.muscleMass,
+      bmi: bmi ?? this.bmi,
+      weightGoal: weightGoal ?? this.weightGoal,
+      bodyFatGoal: bodyFatGoal ?? this.bodyFatGoal,
+      weeklyWorkoutGoal: weeklyWorkoutGoal ?? this.weeklyWorkoutGoal,
+      checkIns: checkIns ?? this.checkIns,
+      currentStreak: currentStreak ?? this.currentStreak,
+      activePrograms: activePrograms ?? this.activePrograms,
+      activeNutritionPlans: activeNutritionPlans ?? this.activeNutritionPlans,
+      progress: progress ?? this.progress,
+      nextSession: nextSession ?? this.nextSession,
+      lastActivity: lastActivity ?? this.lastActivity,
+      activityTime: activityTime ?? this.activityTime,
+      lastAssessmentDate: lastAssessmentDate ?? this.lastAssessmentDate,
+    );
+  }
 }

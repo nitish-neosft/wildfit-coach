@@ -1,6 +1,7 @@
 class NetworkException implements Exception {
   final String message;
-  NetworkException(this.message);
+
+  NetworkException([this.message = 'Network error occurred']);
 
   @override
   String toString() => message;
@@ -8,7 +9,8 @@ class NetworkException implements Exception {
 
 class ServerException implements Exception {
   final String message;
-  ServerException(this.message);
+
+  ServerException([this.message = 'Server error occurred']);
 
   @override
   String toString() => message;
@@ -24,7 +26,8 @@ class BadRequestException implements Exception {
 
 class UnauthorizedException implements Exception {
   final String message;
-  UnauthorizedException(this.message);
+
+  UnauthorizedException([this.message = 'Unauthorized']);
 
   @override
   String toString() => message;
@@ -48,5 +51,12 @@ class NotFoundException implements Exception {
 
 class CacheException implements Exception {
   final String message;
-  CacheException(this.message);
+
+  CacheException([this.message = 'Cache error occurred']);
+}
+
+class ValidationException implements Exception {
+  final String message;
+
+  ValidationException([this.message = 'Validation error occurred']);
 }

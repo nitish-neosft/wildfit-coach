@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wildfit_coach/features/members/domain/entities/member.dart';
 import '../../../../core/constants/colors.dart';
-import '../../domain/entities/dashboard_member.dart';
 
 class MemberCard extends StatelessWidget {
-  final DashboardMember member;
+  final Member member;
 
   const MemberCard({
     super.key,
@@ -33,7 +33,9 @@ class MemberCard extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundImage: NetworkImage(member.avatar),
+                      backgroundImage: member.avatar != null
+                          ? NetworkImage(member.avatar!)
+                          : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -64,7 +66,7 @@ class MemberCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 LinearProgressIndicator(
-                  value: member.progress / 100,
+                  value: member.progress != null ? member.progress! / 100 : 0,
                   backgroundColor: AppColors.darkSurface,
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -83,7 +85,7 @@ class MemberCard extends StatelessWidget {
                     Expanded(
                       child: _InfoItem(
                         title: 'Streak',
-                        value: '${member.streakDays}d',
+                        value: '${member.currentStreak}d',
                         icon: Icons.local_fire_department,
                         color: AppColors.warning,
                       ),
@@ -91,7 +93,7 @@ class MemberCard extends StatelessWidget {
                     Expanded(
                       child: _InfoItem(
                         title: 'Next',
-                        value: member.nextSession,
+                        value: member.nextSession ?? '',
                         icon: Icons.calendar_today,
                         color: AppColors.success,
                       ),

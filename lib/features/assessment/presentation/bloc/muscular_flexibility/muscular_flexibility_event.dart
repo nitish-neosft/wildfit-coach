@@ -4,7 +4,7 @@ abstract class MuscularFlexibilityEvent extends Equatable {
   const MuscularFlexibilityEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class UpdatePushUpType extends MuscularFlexibilityEvent {
@@ -39,6 +39,7 @@ class UpdateFlexibilityTest extends MuscularFlexibilityEvent {
 }
 
 class SaveMuscularFlexibility extends MuscularFlexibilityEvent {
+  final VitalSigns vitalSigns;
   final int pushUps;
   final String pushUpType;
   final int squats;
@@ -49,9 +50,9 @@ class SaveMuscularFlexibility extends MuscularFlexibilityEvent {
   final bool hipFlexorsPass;
   final bool shoulderMobilityPass;
   final bool sitAndReachPass;
-  final DateTime date;
 
   const SaveMuscularFlexibility({
+    required this.vitalSigns,
     required this.pushUps,
     required this.pushUpType,
     required this.squats,
@@ -62,11 +63,11 @@ class SaveMuscularFlexibility extends MuscularFlexibilityEvent {
     required this.hipFlexorsPass,
     required this.shoulderMobilityPass,
     required this.sitAndReachPass,
-    required this.date,
   });
 
   @override
   List<Object> get props => [
+        vitalSigns,
         pushUps,
         pushUpType,
         squats,
@@ -77,6 +78,5 @@ class SaveMuscularFlexibility extends MuscularFlexibilityEvent {
         hipFlexorsPass,
         shoulderMobilityPass,
         sitAndReachPass,
-        date,
       ];
 }

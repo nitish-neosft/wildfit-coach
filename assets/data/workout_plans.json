@@ -2,88 +2,194 @@
   "workout_plans": [
     {
       "id": "1",
-      "name": "Strength Training Basics",
-      "description": "A comprehensive strength training program focusing on major muscle groups",
-      "member_id": "member1",
+      "name": "Full Body Strength",
+      "description": "A comprehensive strength training program targeting all major muscle groups, perfect for building overall strength and muscle mass.",
+      "member_id": "1",
+      "created_by": "trainer_1",
       "type": "strength",
       "exercises": [
         {
-          "id": "1",
-          "name": "Bench Press",
-          "description": "Classic chest exercise using a barbell",
-          "video_url": "https://example.com/videos/bench-press.mp4",
-          "image_url": "https://example.com/images/bench-press.jpg",
-          "sets": 3,
-          "reps": 10,
-          "weight": 60.0,
-          "duration": null,
-          "rest_time": 90
+          "id": "e1",
+          "name": "Barbell Squat",
+          "description": "A compound exercise targeting legs, core, and lower back",
+          "video_url": "https://example.com/videos/squat.mp4",
+          "image_url": "https://example.com/images/squat.jpg",
+          "sets": 4,
+          "reps": 8,
+          "weight": 80.0,
+          "rest_time": 120,
+          "metadata": {
+            "difficulty": "intermediate",
+            "target_muscles": ["quadriceps", "hamstrings", "glutes", "core"]
+          }
         },
         {
-          "id": "2",
-          "name": "Squats",
-          "description": "Lower body compound exercise",
-          "video_url": "https://example.com/videos/squats.mp4",
-          "image_url": "https://example.com/images/squats.jpg",
+          "id": "e2",
+          "name": "Bench Press",
+          "description": "Classic chest exercise for upper body strength",
+          "video_url": "https://example.com/videos/bench-press.mp4",
+          "image_url": "https://example.com/images/bench-press.jpg",
           "sets": 4,
-          "reps": 12,
-          "weight": 80.0,
-          "duration": null,
-          "rest_time": 120
+          "reps": 10,
+          "weight": 60.0,
+          "rest_time": 90,
+          "metadata": {
+            "difficulty": "intermediate",
+            "target_muscles": ["chest", "shoulders", "triceps"]
+          }
+        },
+        {
+          "id": "e3",
+          "name": "Deadlift",
+          "description": "Compound movement for total body strength",
+          "video_url": "https://example.com/videos/deadlift.mp4",
+          "image_url": "https://example.com/images/deadlift.jpg",
+          "sets": 3,
+          "reps": 6,
+          "weight": 100.0,
+          "rest_time": 180,
+          "metadata": {
+            "difficulty": "advanced",
+            "target_muscles": ["back", "legs", "core", "forearms"]
+          }
         }
       ],
       "sessions_per_week": 3,
-      "created_at": "2024-03-20T10:00:00Z",
-      "start_date": "2024-03-21T00:00:00Z",
-      "end_date": "2024-04-21T00:00:00Z",
-      "is_active": true,
-      "progress": 0.0,
-      "metadata": {
-        "difficulty": "beginner",
-        "equipment_needed": ["barbell", "squat rack", "bench"]
-      }
-    },
-    {
-      "id": "2",
-      "name": "HIIT Cardio Blast",
-      "description": "High-intensity interval training for maximum calorie burn",
-      "member_id": "member1",
-      "type": "hiit",
-      "exercises": [
-        {
-          "id": "3",
-          "name": "Burpees",
-          "description": "Full body exercise combining squat, push-up, and jump",
-          "video_url": "https://example.com/videos/burpees.mp4",
-          "image_url": "https://example.com/images/burpees.jpg",
-          "sets": 3,
-          "reps": 15,
-          "weight": null,
-          "duration": 45,
-          "rest_time": 30
-        },
-        {
-          "id": "4",
-          "name": "Mountain Climbers",
-          "description": "Dynamic core and cardio exercise",
-          "video_url": "https://example.com/videos/mountain-climbers.mp4",
-          "image_url": "https://example.com/images/mountain-climbers.jpg",
-          "sets": 3,
-          "reps": 20,
-          "weight": null,
-          "duration": 60,
-          "rest_time": 30
-        }
-      ],
-      "sessions_per_week": 4,
-      "created_at": "2024-03-20T11:00:00Z",
-      "start_date": "2024-03-22T00:00:00Z",
-      "end_date": "2024-04-22T00:00:00Z",
+      "created_at": "2024-03-01T10:00:00Z",
+      "start_date": "2024-03-02T00:00:00Z",
+      "end_date": "2024-05-02T00:00:00Z",
       "is_active": true,
       "progress": 0.25,
       "metadata": {
         "difficulty": "intermediate",
-        "equipment_needed": ["none"]
+        "equipment_needed": ["barbell", "bench", "squat rack"],
+        "estimated_duration": 60
+      }
+    },
+    {
+      "id": "2",
+      "name": "HIIT Cardio",
+      "description": "High-intensity interval training program designed to improve cardiovascular fitness and burn calories efficiently.",
+      "member_id": "1",
+      "created_by": "trainer_1",
+      "type": "hiit",
+      "exercises": [
+        {
+          "id": "e4",
+          "name": "Burpees",
+          "description": "Full body exercise combining squat thrust and jump",
+          "video_url": "https://example.com/videos/burpees.mp4",
+          "image_url": "https://example.com/images/burpees.jpg",
+          "sets": 3,
+          "reps": 15,
+          "rest_time": 30,
+          "metadata": {
+            "difficulty": "intermediate",
+            "target_muscles": ["full_body"]
+          }
+        },
+        {
+          "id": "e5",
+          "name": "Mountain Climbers",
+          "description": "Dynamic core exercise with cardio benefits",
+          "video_url": "https://example.com/videos/mountain-climbers.mp4",
+          "image_url": "https://example.com/images/mountain-climbers.jpg",
+          "sets": 3,
+          "reps": 20,
+          "rest_time": 30,
+          "metadata": {
+            "difficulty": "intermediate",
+            "target_muscles": ["core", "shoulders", "cardio"]
+          }
+        },
+        {
+          "id": "e6",
+          "name": "Jump Rope",
+          "description": "Classic cardio exercise for agility and endurance",
+          "video_url": "https://example.com/videos/jump-rope.mp4",
+          "image_url": "https://example.com/images/jump-rope.jpg",
+          "sets": 3,
+          "duration": 60,
+          "rest_time": 45,
+          "metadata": {
+            "difficulty": "beginner",
+            "target_muscles": ["legs", "cardio"]
+          }
+        }
+      ],
+      "sessions_per_week": 4,
+      "created_at": "2024-03-05T14:00:00Z",
+      "start_date": "2024-03-06T00:00:00Z",
+      "end_date": "2024-05-06T00:00:00Z",
+      "is_active": true,
+      "progress": 0.15,
+      "metadata": {
+        "difficulty": "intermediate",
+        "equipment_needed": ["jump rope"],
+        "estimated_duration": 30
+      }
+    },
+    {
+      "id": "3",
+      "name": "Flexibility & Mobility",
+      "description": "A program focused on improving flexibility, mobility, and reducing muscle tension through stretching and mobility work.",
+      "member_id": "1",
+      "created_by": "trainer_1",
+      "type": "flexibility",
+      "exercises": [
+        {
+          "id": "e7",
+          "name": "Dynamic Hip Stretches",
+          "description": "Series of dynamic stretches for hip mobility",
+          "video_url": "https://example.com/videos/hip-stretches.mp4",
+          "image_url": "https://example.com/images/hip-stretches.jpg",
+          "sets": 3,
+          "duration": 45,
+          "rest_time": 30,
+          "metadata": {
+            "difficulty": "beginner",
+            "target_muscles": ["hips", "lower_back"]
+          }
+        },
+        {
+          "id": "e8",
+          "name": "Shoulder Mobility",
+          "description": "Exercises to improve shoulder range of motion",
+          "video_url": "https://example.com/videos/shoulder-mobility.mp4",
+          "image_url": "https://example.com/images/shoulder-mobility.jpg",
+          "sets": 2,
+          "reps": 10,
+          "rest_time": 30,
+          "metadata": {
+            "difficulty": "beginner",
+            "target_muscles": ["shoulders", "upper_back"]
+          }
+        },
+        {
+          "id": "e9",
+          "name": "Yoga Flow",
+          "description": "Basic yoga sequence for full body flexibility",
+          "video_url": "https://example.com/videos/yoga-flow.mp4",
+          "image_url": "https://example.com/images/yoga-flow.jpg",
+          "sets": 1,
+          "duration": 300,
+          "rest_time": 0,
+          "metadata": {
+            "difficulty": "beginner",
+            "target_muscles": ["full_body"]
+          }
+        }
+      ],
+      "sessions_per_week": 2,
+      "created_at": "2024-03-10T09:00:00Z",
+      "start_date": "2024-03-11T00:00:00Z",
+      "end_date": "2024-05-11T00:00:00Z",
+      "is_active": true,
+      "progress": 0.0,
+      "metadata": {
+        "difficulty": "beginner",
+        "equipment_needed": ["yoga mat", "foam roller"],
+        "estimated_duration": 45
       }
     }
   ]

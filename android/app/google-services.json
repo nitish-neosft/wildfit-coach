@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "646434709850",
+    "project_id": "android-ecommerce-5db73",
+    "storage_bucket": "android-ecommerce-5db73.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646434709850:android:f39f6df0bc78eff44ad363",
+        "android_client_info": {
+          "package_name": "com.example.ecommerceapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKgbh7H7hssKPH_P2IFcIQgUCJpIm55Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646434709850:android:4e0df46e16939a0f4ad363",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKgbh7H7hssKPH_P2IFcIQgUCJpIm55Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646434709850:android:aaa3d330e1d8eba34ad363",
+        "android_client_info": {
+          "package_name": "com.example.wildfit_coach"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKgbh7H7hssKPH_P2IFcIQgUCJpIm55Lg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,20 +4,30 @@ import '../../domain/entities/flexibility_tests.dart';
 part 'flexibility_tests_model.g.dart';
 
 @JsonSerializable()
-class FlexibilityTestsModel {
-  final bool quadriceps;
-  final bool hamstring;
-  final bool hipFlexors;
-  final bool shoulderMobility;
-  final bool sitAndReach;
+class FlexibilityTestsModel extends FlexibilityTests {
+  const FlexibilityTestsModel({
+    required bool quadriceps,
+    required bool hamstring,
+    required bool hipFlexors,
+    required bool shoulderMobility,
+    required bool sitAndReach,
+  }) : super(
+          quadriceps: quadriceps,
+          hamstring: hamstring,
+          hipFlexors: hipFlexors,
+          shoulderMobility: shoulderMobility,
+          sitAndReach: sitAndReach,
+        );
 
-  FlexibilityTestsModel({
-    required this.quadriceps,
-    required this.hamstring,
-    required this.hipFlexors,
-    required this.shoulderMobility,
-    required this.sitAndReach,
-  });
+  factory FlexibilityTestsModel.empty() {
+    return const FlexibilityTestsModel(
+      quadriceps: false,
+      hamstring: false,
+      hipFlexors: false,
+      shoulderMobility: false,
+      sitAndReach: false,
+    );
+  }
 
   factory FlexibilityTestsModel.fromJson(Map<String, dynamic> json) =>
       _$FlexibilityTestsModelFromJson(json);

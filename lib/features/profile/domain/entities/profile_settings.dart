@@ -5,11 +5,14 @@ class ProfileSettings extends Equatable {
   final String name;
   final String email;
   final String avatar;
+  final String role; // 'coach' or 'physio'
+  final String specialization;
+  final int yearsOfExperience;
+  final List<String> certifications;
+  final int totalMembers;
+  final int activeMembers;
   final NotificationSettings notifications;
   final String language;
-  final bool hasWorkoutPlan;
-  final bool hasNutritionPlan;
-  final bool hasFitnessTest;
   final bool hasUnpaidDues;
 
   const ProfileSettings({
@@ -17,11 +20,14 @@ class ProfileSettings extends Equatable {
     required this.name,
     required this.email,
     required this.avatar,
+    required this.role,
+    required this.specialization,
+    required this.yearsOfExperience,
+    required this.certifications,
+    required this.totalMembers,
+    required this.activeMembers,
     required this.notifications,
     required this.language,
-    required this.hasWorkoutPlan,
-    required this.hasNutritionPlan,
-    required this.hasFitnessTest,
     required this.hasUnpaidDues,
   });
 
@@ -31,42 +37,45 @@ class ProfileSettings extends Equatable {
         name,
         email,
         avatar,
+        role,
+        specialization,
+        yearsOfExperience,
+        certifications,
+        totalMembers,
+        activeMembers,
         notifications,
         language,
-        hasWorkoutPlan,
-        hasNutritionPlan,
-        hasFitnessTest,
         hasUnpaidDues,
       ];
 }
 
 class NotificationSettings extends Equatable {
-  final bool checkInReminders;
-  final bool checkOutReminders;
-  final bool nutritionPlanAlerts;
-  final bool fitnessTestReminders;
-  final bool workoutPlanAlerts;
-  final bool trainerAttendanceSummary;
+  final bool memberCheckInAlerts;
+  final bool memberAssessmentReminders;
+  final bool memberProgressAlerts;
+  final bool membershipExpiryAlerts;
+  final bool newMemberAssignments;
+  final bool staffMeetingReminders;
   final bool paymentReminders;
 
   const NotificationSettings({
-    required this.checkInReminders,
-    required this.checkOutReminders,
-    required this.nutritionPlanAlerts,
-    required this.fitnessTestReminders,
-    required this.workoutPlanAlerts,
-    required this.trainerAttendanceSummary,
+    required this.memberCheckInAlerts,
+    required this.memberAssessmentReminders,
+    required this.memberProgressAlerts,
+    required this.membershipExpiryAlerts,
+    required this.newMemberAssignments,
+    required this.staffMeetingReminders,
     required this.paymentReminders,
   });
 
   @override
   List<Object?> get props => [
-        checkInReminders,
-        checkOutReminders,
-        nutritionPlanAlerts,
-        fitnessTestReminders,
-        workoutPlanAlerts,
-        trainerAttendanceSummary,
+        memberCheckInAlerts,
+        memberAssessmentReminders,
+        memberProgressAlerts,
+        membershipExpiryAlerts,
+        newMemberAssignments,
+        staffMeetingReminders,
         paymentReminders,
       ];
 }

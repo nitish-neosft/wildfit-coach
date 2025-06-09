@@ -21,7 +21,7 @@ class DashboardLoaded extends DashboardState {
 }
 
 class MembersLoaded extends DashboardState {
-  final List<DashboardMember> members;
+  final List<Member> members;
 
   const MembersLoaded(this.members);
 
@@ -30,7 +30,7 @@ class MembersLoaded extends DashboardState {
 }
 
 class MemberDetailsLoaded extends DashboardState {
-  final DashboardMember member;
+  final Member member;
 
   const MemberDetailsLoaded(this.member);
 

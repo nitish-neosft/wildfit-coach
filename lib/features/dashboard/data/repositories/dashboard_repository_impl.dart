@@ -1,9 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:wildfit_coach/features/members/domain/entities/member.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../domain/entities/dashboard_data.dart';
-import '../../domain/entities/dashboard_member.dart';
+
 import '../../domain/repositories/dashboard_repository.dart';
 import '../datasources/dashboard_remote_data_source.dart';
 
@@ -37,7 +38,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<Either<Failure, List<DashboardMember>>> getMembers() async {
+  Future<Either<Failure, List<Member>>> getMembers() async {
     if (await networkInfo.isConnected) {
       try {
         final members = await remoteDataSource.getMembers();
@@ -57,8 +58,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<Either<Failure, DashboardMember>> getMemberDetails(
-      String memberId) async {
+  Future<Either<Failure, Member>> getMemberDetails(String memberId) async {
     if (await networkInfo.isConnected) {
       try {
         final member = await remoteDataSource.getMemberDetails(memberId);

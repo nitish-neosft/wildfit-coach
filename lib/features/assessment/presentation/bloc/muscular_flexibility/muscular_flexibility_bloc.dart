@@ -1,13 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/user_assessment.dart';
-import '../../../domain/entities/vital_signs.dart';
-import '../../../domain/entities/body_measurements.dart';
-import '../../../domain/entities/cardio_fitness.dart';
 import '../../../domain/entities/muscular_endurance.dart';
 import '../../../domain/entities/flexibility_tests.dart';
+import '../../../domain/entities/vital_signs.dart';
 import '../../../domain/usecases/save_assessment.dart';
-import '../../../../../core/error/failures.dart';
+import '../../../data/models/body_measurements_model.dart';
+import '../../../data/models/cardio_fitness_model.dart';
 
 part 'muscular_flexibility_event.dart';
 part 'muscular_flexibility_state.dart';
@@ -15,9 +14,11 @@ part 'muscular_flexibility_state.dart';
 class MuscularFlexibilityBloc
     extends Bloc<MuscularFlexibilityEvent, MuscularFlexibilityState> {
   final SaveAssessment saveAssessment;
+  final String memberId;
 
   MuscularFlexibilityBloc({
     required this.saveAssessment,
+    required this.memberId,
   }) : super(const MuscularFlexibilityInitial()) {
     on<UpdatePushUpType>(_onUpdatePushUpType);
     on<UpdateSquatType>(_onUpdateSquatType);
@@ -86,45 +87,20 @@ class MuscularFlexibilityBloc
     );
 
     final assessment = UserAssessment(
-      name: 'Muscular Flexibility Assessment ${event.date}',
-      vitalSigns: const VitalSigns(
-        bloodPressure: '',
-        restingHeartRate: 0,
-        bpCategory: '',
-      ),
-      bodyMeasurements: const BodyMeasurements(
-        height: 0,
-        weight: 0,
-        chest: 0,
-        waist: 0,
-        hips: 0,
-        arms: 0,
-        neck: 0,
-        forearm: 0,
-        calf: 0,
-        midThigh: 0,
-      ),
-      cardioFitness: const CardioFitness(
-        vo2Max: 0,
-        rockportTestResult: '',
-        ymcaStepTestResult: '',
-        ymcaHeartRate: 0,
-      ),
+      id: null,
+      name: 'Muscular Flexibility Assessment',
+      vitalSigns: event.vitalSigns,
+      bodyMeasurements: BodyMeasurementsModel.empty(),
+      cardioFitness: CardioFitnessModel.empty(),
       muscularEndurance: muscularEndurance,
       flexibilityTests: flexibilityTests,
+      createdAt: null,
+      updatedAt: null,
     );
 
     final result = await saveAssessment(SaveParams(assessment: assessment));
     result.fold(
-      (failure) {
-        if (failure is ServerFailure) {
-          emit(MuscularFlexibilityError('Server error: ${failure.message}'));
-        } else if (failure is NetworkFailure) {
-          emit(MuscularFlexibilityError('Network error: ${failure.message}'));
-        } else {
-          emit(MuscularFlexibilityError(failure.message));
-        }
-      },
+      (failure) => emit(MuscularFlexibilityError(failure.message)),
       (_) => emit(MuscularFlexibilitySaved()),
     );
   }

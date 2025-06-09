@@ -63,10 +63,10 @@ class MemberBloc extends Bloc<MemberEvent, MemberState> {
       emit(MemberAuthError(failure.message));
     } else if (failure is NetworkFailure) {
       emit(MemberNetworkError(failure.message));
-    } else if (failure is NotFoundFailure) {
-      emit(MemberNotFound(failure.message));
-    } else {
+    } else if (failure is ServerFailure) {
       emit(MemberError(failure.message));
+    } else {
+      emit(const MemberError('An unexpected error occurred'));
     }
   }
 }

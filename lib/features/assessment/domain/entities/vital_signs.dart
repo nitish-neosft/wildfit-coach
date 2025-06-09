@@ -12,9 +12,5 @@ class VitalSigns extends Equatable {
   });
 
   @override
-  List<Object> get props => [
-        bloodPressure,
-        restingHeartRate,
-        bpCategory,
-      ];
+  List<Object> get props => [bloodPressure, restingHeartRate, bpCategory];
 }

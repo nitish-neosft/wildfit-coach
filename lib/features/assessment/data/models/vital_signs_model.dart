@@ -4,16 +4,16 @@ import '../../domain/entities/vital_signs.dart';
 part 'vital_signs_model.g.dart';
 
 @JsonSerializable()
-class VitalSignsModel {
-  final String bloodPressure;
-  final int restingHeartRate;
-  final String bpCategory;
-
-  VitalSignsModel({
-    required this.bloodPressure,
-    required this.restingHeartRate,
-    required this.bpCategory,
-  });
+class VitalSignsModel extends VitalSigns {
+  const VitalSignsModel({
+    required String bloodPressure,
+    required int restingHeartRate,
+    required String bpCategory,
+  }) : super(
+          bloodPressure: bloodPressure,
+          restingHeartRate: restingHeartRate,
+          bpCategory: bpCategory,
+        );
 
   factory VitalSignsModel.fromJson(Map<String, dynamic> json) =>
       _$VitalSignsModelFromJson(json);

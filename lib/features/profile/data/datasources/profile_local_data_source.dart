@@ -22,6 +22,26 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
       final jsonString =
           await rootBundle.loadString('assets/data/profile_settings.json');
       final Map<String, dynamic> jsonMap = json.decode(jsonString);
+
+      // Add default values for new fields if they don't exist in the JSON
+      jsonMap.putIfAbsent('role', () => 'coach');
+      jsonMap.putIfAbsent('specialization', () => 'General Fitness');
+      jsonMap.putIfAbsent('years_of_experience', () => 5);
+      jsonMap.putIfAbsent(
+          'certifications', () => ['CPT', 'Nutrition Specialist']);
+      jsonMap.putIfAbsent('total_members', () => 50);
+      jsonMap.putIfAbsent('active_members', () => 35);
+
+      // Update notification settings structure
+      final notifications = jsonMap['notifications'] as Map<String, dynamic>;
+      notifications.putIfAbsent('member_check_in_alerts', () => true);
+      notifications.putIfAbsent('member_assessment_reminders', () => true);
+      notifications.putIfAbsent('member_progress_alerts', () => true);
+      notifications.putIfAbsent('membership_expiry_alerts', () => true);
+      notifications.putIfAbsent('new_member_assignments', () => true);
+      notifications.putIfAbsent('staff_meeting_reminders', () => true);
+      notifications.putIfAbsent('payment_reminders', () => true);
+
       return ProfileSettingsModel.fromJson(jsonMap);
     } catch (e) {
       throw Exception('Failed to load profile settings: $e');

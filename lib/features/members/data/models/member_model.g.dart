@@ -14,16 +14,8 @@ MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => MemberModel(
       avatar: json['avatar'] as String?,
       joinedAt: DateTime.parse(json['joined_at'] as String),
       plan: json['plan'] as String,
-      hasWorkoutPlan: json['has_workout_plan'] as bool? ?? false,
-      hasNutritionPlan: json['has_nutrition_plan'] as bool? ?? false,
       hasAssessment: json['has_assessment'] as bool? ?? false,
       measurements: json['measurements'] as Map<String, dynamic>?,
-      workoutPlanIds: (json['workout_plan_ids'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      nutritionPlanIds: (json['nutrition_plan_ids'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
       assessments: (json['assessments'] as List<dynamic>?)
           ?.map((e) => AssessmentModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -50,6 +42,7 @@ MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => MemberModel(
           .toList(),
       currentStreak: (json['current_streak'] as num?)?.toInt(),
       activePrograms: (json['active_programs'] as num?)?.toInt(),
+      activeNutritionPlans: (json['active_nutrition_plans'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$MemberModelToJson(MemberModel instance) =>
@@ -61,12 +54,8 @@ Map<String, dynamic> _$MemberModelToJson(MemberModel instance) =>
       'avatar': instance.avatar,
       'joined_at': instance.joinedAt.toIso8601String(),
       'plan': instance.plan,
-      'has_workout_plan': instance.hasWorkoutPlan,
-      'has_nutrition_plan': instance.hasNutritionPlan,
       'has_assessment': instance.hasAssessment,
       'measurements': instance.measurements,
-      'workout_plan_ids': instance.workoutPlanIds,
-      'nutrition_plan_ids': instance.nutritionPlanIds,
       'trainer_name': instance.trainerName,
       'membership_expiry_date': instance.membershipExpiryDate.toIso8601String(),
       'last_check_in': instance.lastCheckIn?.toIso8601String(),
@@ -82,6 +71,7 @@ Map<String, dynamic> _$MemberModelToJson(MemberModel instance) =>
       'check_ins': instance.checkIns?.map((e) => e.toIso8601String()).toList(),
       'current_streak': instance.currentStreak,
       'active_programs': instance.activePrograms,
+      'active_nutrition_plans': instance.activeNutritionPlans,
       'assessments': instance.assessments?.map((e) => e.toJson()).toList(),
       'today_activities':
           instance.todayActivities?.map((e) => e.toJson()).toList(),

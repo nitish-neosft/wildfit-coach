@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:wildfit_coach/features/members/domain/entities/assessment.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/network/rest_client.dart';
-import '../../domain/entities/member.dart';
+import 'package:wildfit_coach/core/network/rest_client.dart';
+import 'package:wildfit_coach/features/members/data/models/assessment_model.dart';
 import '../models/member_model.dart';
+import '../../../../core/error/exceptions.dart';
 
 abstract class MemberRemoteDataSource {
-  Future<Member> getMember(String id);
-  Future<void> updateMember(Member member);
-  Future<void> addAssessment(String memberId, Assessment assessment);
-  Future<List<Member>> getMembers();
-  Future<Member> createMember(Member member);
-  Future<void> deleteMember(String id);
+  Future<MemberModel> getMember(String id);
+  Future<void> updateMember(MemberModel member);
+  Future<void> addAssessment(String memberId, AssessmentModel assessment);
+  Future<List<MemberModel>> getMembers();
   Future<void> updateMemberGoals({
     required String id,
     double? weightGoal,
@@ -22,6 +19,9 @@ abstract class MemberRemoteDataSource {
   Future<void> checkIn(String id);
   Future<void> updateMemberMeasurements(
       String id, Map<String, dynamic> measurements);
+  Future<MemberModel> createMember(MemberModel member);
+  Future<void> deleteMember(String id);
+  Future<List<MemberModel>> getMembersWithPendingAssessments();
 }
 
 class MemberRemoteDataSourceImpl implements MemberRemoteDataSource {
@@ -29,116 +29,64 @@ class MemberRemoteDataSourceImpl implements MemberRemoteDataSource {
 
   MemberRemoteDataSourceImpl(this._client);
 
+  Future<Map<String, dynamic>> _loadSampleData() async {
+    final String jsonString = await rootBundle.loadString(
+        'lib/features/members/data/sample/pending_assessments.json');
+    return json.decode(jsonString);
+  }
+
   @override
-  Future<Member> getMember(String id) async {
+  Future<MemberModel> getMember(String id) async {
     try {
-      // Load sample data from assets
-      final jsonString =
-          await rootBundle.loadString('assets/data/dashboard_data.json');
-      final jsonData = json.decode(jsonString);
-      final List<dynamic> membersJson = jsonData['members'];
-      final memberJson = membersJson.firstWhere(
+      final jsonData = await _loadSampleData();
+      final List<dynamic> members = jsonData['members'];
+      final memberJson = members.firstWhere(
         (member) => member['id'] == id,
         orElse: () => throw NotFoundException('Member not found'),
       );
-
-      return MemberModel(
-        id: memberJson['id'],
-        name: memberJson['name'],
-        email: memberJson['email'],
-        avatar: memberJson['avatar'],
-        joinedAt: DateTime.parse(memberJson['joined_at']),
-        plan: memberJson['plan'],
-        hasWorkoutPlan: true,
-        hasNutritionPlan: true,
-        hasAssessment: true,
-        trainerName: memberJson['trainer_name'],
-        membershipExpiryDate: DateTime.parse(memberJson['membership_expiry']),
-        lastCheckIn: DateTime.parse(memberJson['last_checkin']),
-        daysPresent: memberJson['days_present'],
-        height: (memberJson['height'] as num).toDouble(),
-        weight: (memberJson['weight'] as num).toDouble(),
-        bodyFat: (memberJson['body_fat'] as num).toDouble(),
-        muscleMass: (memberJson['muscle_mass'] as num).toDouble(),
-        bmi: (memberJson['bmi'] as num).toDouble(),
-        weeklyWorkoutGoal: memberJson['weekly_workout_goal'],
-        currentStreak: memberJson['streak_days'],
-        activePrograms: 1,
-        measurements: Map<String, dynamic>.from(memberJson['measurements']),
-      );
-    } on FormatException {
-      throw ServerException('Invalid data format');
+      return MemberModel.fromJson(memberJson);
     } catch (e) {
       if (e is NotFoundException) rethrow;
-      throw ServerException('Failed to load member details');
+      throw ServerException('Failed to get member details');
     }
   }
 
   @override
-  Future<void> updateMember(Member member) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Future<void> addAssessment(String memberId, Assessment assessment) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Future<List<Member>> getMembers() async {
+  Future<List<MemberModel>> getMembers() async {
     try {
-      // Load sample data from assets
-      final jsonString =
-          await rootBundle.loadString('assets/data/dashboard_data.json');
-      final jsonData = json.decode(jsonString);
-      final List<dynamic> membersJson = jsonData['members'];
-
-      return membersJson
-          .map((memberJson) => MemberModel(
-                id: memberJson['id'],
-                name: memberJson['name'],
-                email: memberJson['email'],
-                avatar: memberJson['avatar'],
-                joinedAt: DateTime.parse(memberJson['joined_at']),
-                plan: memberJson['plan'],
-                hasWorkoutPlan: true,
-                hasNutritionPlan: true,
-                hasAssessment: true,
-                trainerName: memberJson['trainer_name'],
-                membershipExpiryDate:
-                    DateTime.parse(memberJson['membership_expiry']),
-                lastCheckIn: DateTime.parse(memberJson['last_checkin']),
-                daysPresent: memberJson['days_present'],
-                height: (memberJson['height'] as num).toDouble(),
-                weight: (memberJson['weight'] as num).toDouble(),
-                bodyFat: (memberJson['body_fat'] as num).toDouble(),
-                muscleMass: (memberJson['muscle_mass'] as num).toDouble(),
-                bmi: (memberJson['bmi'] as num).toDouble(),
-                weeklyWorkoutGoal: memberJson['weekly_workout_goal'],
-                currentStreak: memberJson['streak_days'],
-                activePrograms: 1,
-                measurements:
-                    Map<String, dynamic>.from(memberJson['measurements']),
-              ))
-          .toList();
+      final jsonData = await _loadSampleData();
+      final List<dynamic> members = jsonData['members'];
+      return members.map((json) => MemberModel.fromJson(json)).toList();
     } catch (e) {
       throw ServerException('Failed to load members');
     }
   }
 
   @override
-  Future<Member> createMember(Member member) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
+  Future<MemberModel> createMember(MemberModel member) async {
+    // For sample data, just return the member as is
     return member;
   }
 
   @override
+  Future<void> updateMember(MemberModel member) async {
+    // No-op for sample data
+  }
+
+  @override
   Future<void> deleteMember(String id) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
+    // No-op for sample data
+  }
+
+  @override
+  Future<void> addAssessment(
+      String memberId, AssessmentModel assessment) async {
+    // No-op for sample data
+  }
+
+  @override
+  Future<void> checkIn(String id) async {
+    // No-op for sample data
   }
 
   @override
@@ -148,20 +96,23 @@ class MemberRemoteDataSourceImpl implements MemberRemoteDataSource {
     double? bodyFatGoal,
     int? weeklyWorkoutGoal,
   }) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
-  }
-
-  @override
-  Future<void> checkIn(String id) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
+    // No-op for sample data
   }
 
   @override
   Future<void> updateMemberMeasurements(
       String id, Map<String, dynamic> measurements) async {
-    // TODO: Implement when backend is ready
-    await Future.delayed(const Duration(milliseconds: 500));
+    // No-op for sample data
+  }
+
+  @override
+  Future<List<MemberModel>> getMembersWithPendingAssessments() async {
+    try {
+      final data = await _loadSampleData();
+      final List<dynamic> membersJson = data['members'];
+      return membersJson.map((json) => MemberModel.fromJson(json)).toList();
+    } catch (e) {
+      throw ServerException('Failed to load sample data: ${e.toString()}');
+    }
   }
 }

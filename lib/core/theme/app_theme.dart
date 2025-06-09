@@ -75,7 +75,7 @@ class AppTheme {
           color: AppColors.darkGrey,
         ),
         hintStyle: GoogleFonts.poppins(
-          color: AppColors.darkGrey.withOpacity(0.7),
+          color: AppColors.darkGrey.withValues(alpha: 0.7 * 255),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -87,7 +87,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.darkCard,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2 * 255),
         labelStyle: textTheme.bodyMedium?.copyWith(color: AppColors.white),
         secondaryLabelStyle:
             textTheme.bodyMedium?.copyWith(color: AppColors.white),

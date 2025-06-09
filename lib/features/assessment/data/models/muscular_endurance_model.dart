@@ -4,20 +4,30 @@ import '../../domain/entities/muscular_endurance.dart';
 part 'muscular_endurance_model.g.dart';
 
 @JsonSerializable()
-class MuscularEnduranceModel {
-  final int pushUps;
-  final String pushUpType;
-  final int squats;
-  final String squatType;
-  final int pullUps;
+class MuscularEnduranceModel extends MuscularEndurance {
+  const MuscularEnduranceModel({
+    required int pushUps,
+    required String pushUpType,
+    required int squats,
+    required String squatType,
+    required int pullUps,
+  }) : super(
+          pushUps: pushUps,
+          pushUpType: pushUpType,
+          squats: squats,
+          squatType: squatType,
+          pullUps: pullUps,
+        );
 
-  MuscularEnduranceModel({
-    required this.pushUps,
-    required this.pushUpType,
-    required this.squats,
-    required this.squatType,
-    required this.pullUps,
-  });
+  factory MuscularEnduranceModel.empty() {
+    return const MuscularEnduranceModel(
+      pushUps: 0,
+      pushUpType: '',
+      pullUps: 0,
+      squats: 0,
+      squatType: '',
+    );
+  }
 
   factory MuscularEnduranceModel.fromJson(Map<String, dynamic> json) =>
       _$MuscularEnduranceModelFromJson(json);

@@ -5,12 +5,16 @@ class ProfileHeader extends StatelessWidget {
   final String name;
   final String email;
   final String avatar;
+  final String role;
+  final String specialization;
 
   const ProfileHeader({
     super.key,
     required this.name,
     required this.email,
     required this.avatar,
+    required this.role,
+    required this.specialization,
   });
 
   @override
@@ -40,6 +44,21 @@ class ProfileHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             email,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.darkGrey,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            role,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            specialization,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.darkGrey,
                 ),

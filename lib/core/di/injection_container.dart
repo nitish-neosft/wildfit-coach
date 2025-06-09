@@ -1,11 +1,18 @@
 import 'package:get_it/get_it.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:wildfit_coach/features/auth/data/services/user_service.dart';
+import 'package:wildfit_coach/features/members/data/datasources/member_remote_data_source.dart';
+import 'package:wildfit_coach/features/members/data/repositories/member_repository_impl.dart';
+import 'package:wildfit_coach/features/members/domain/repositories/member_repository.dart';
+import 'package:wildfit_coach/features/members/domain/usecases/get_member.dart';
+import 'package:wildfit_coach/features/members/domain/usecases/update_member.dart';
+import 'package:wildfit_coach/features/members/domain/usecases/add_assessment.dart';
+import 'package:wildfit_coach/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:wildfit_coach/features/notifications/presentation/bloc/notification_bloc.dart';
+
 import 'package:wildfit_coach/features/members/presentation/bloc/member/member_bloc.dart';
-import 'package:wildfit_coach/features/members/presentation/bloc/nutrition_plan/nutrition_plan_bloc.dart';
-import 'package:wildfit_coach/features/members/presentation/bloc/workout_plan/workout_plan_bloc.dart';
+
 import '../network/dio_cofig.dart';
 import '../network/rest_client.dart';
 import '../network/network_info.dart';
@@ -37,10 +44,6 @@ import '../../features/assessment/domain/usecases/get_assessments.dart';
 import '../../features/assessment/domain/usecases/save_assessment.dart';
 import '../../features/assessment/domain/usecases/update_assessment.dart';
 import '../../features/assessment/presentation/bloc/assessment_bloc.dart';
-import '../../features/members/domain/usecases/get_member.dart';
-import '../../features/members/data/repositories/member_repository_impl.dart';
-import '../../features/members/domain/repositories/member_repository.dart';
-import '../../features/members/data/datasources/member_remote_data_source.dart';
 import '../../features/profile/data/datasources/profile_remote_data_source.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
@@ -60,6 +63,33 @@ import '../../features/members/domain/usecases/update_member.dart'
     as update_member;
 import '../../features/members/domain/usecases/add_assessment.dart'
     as add_assessment;
+
+import '../../features/workout/data/datasources/workout_remote_data_source.dart';
+import '../../features/workout/data/repositories/workout_repository_impl.dart';
+import '../../features/workout/domain/repositories/workout_repository.dart';
+import '../../features/workout/domain/usecases/get_member_workout_plans.dart';
+import '../../features/workout/domain/usecases/get_workout_plan.dart';
+import '../../features/workout/domain/usecases/create_workout_plan.dart';
+import '../../features/workout/domain/usecases/update_workout_plan.dart';
+import '../../features/workout/domain/usecases/delete_workout_plan.dart';
+import '../../features/workout/presentation/bloc/workout_bloc.dart';
+import '../../features/workout/data/datasources/workout_local_data_source.dart';
+import '../../features/workout/domain/usecases/get_workout_plan_by_id.dart';
+import '../../features/workout/domain/usecases/get_workout_plans.dart';
+
+import '../../features/nutrition/data/datasources/nutrition_remote_data_source.dart';
+import '../../features/nutrition/data/repositories/nutrition_repository_impl.dart';
+import '../../features/nutrition/domain/repositories/nutrition_repository.dart';
+import '../../features/nutrition/domain/usecases/get_nutrition_plans.dart';
+import '../../features/nutrition/domain/usecases/get_member_nutrition_plans.dart';
+import '../../features/nutrition/domain/usecases/get_nutrition_plan_by_id.dart';
+import '../../features/nutrition/domain/usecases/create_nutrition_plan.dart';
+import '../../features/nutrition/domain/usecases/delete_nutrition_plan.dart';
+import '../../features/nutrition/presentation/bloc/nutrition_bloc.dart';
+import '../../features/nutrition/data/datasources/nutrition_local_data_source.dart';
+import '../../features/nutrition/data/datasources/nutrition_remote_data_source.dart';
+
+import '../../features/assessment/presentation/bloc/pending_assessments/pending_assessments_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -83,6 +113,10 @@ Future<void> init() async {
 
   // Services
   sl.registerLazySingleton(() => UserService(sl()));
+
+  // Features - Notifications
+  sl.registerLazySingleton(() => NotificationRepository(sl()));
+  sl.registerFactory(() => NotificationBloc(sl()));
 
   // Features - Auth
   sl.registerLazySingleton<AuthRepository>(
@@ -227,34 +261,26 @@ Future<void> init() async {
     ),
   );
 
+  // Member Use Cases
   sl.registerLazySingleton<GetMember>(
     () => GetMember(sl()),
   );
 
-  sl.registerLazySingleton<update_member.UpdateMember>(
-    () => update_member.UpdateMember(sl()),
+  sl.registerLazySingleton<UpdateMember>(
+    () => UpdateMember(sl()),
   );
 
-  sl.registerLazySingleton<add_assessment.AddAssessment>(
-    () => add_assessment.AddAssessment(sl()),
+  sl.registerLazySingleton<AddAssessment>(
+    () => AddAssessment(sl()),
   );
 
+  // Member Bloc
   sl.registerFactory(
     () => MemberBloc(
-      getMember: sl<GetMember>(),
-      updateMember: sl<update_member.UpdateMember>(),
-      addAssessment: sl<add_assessment.AddAssessment>(),
+      getMember: sl(),
+      updateMember: sl(),
+      addAssessment: sl(),
     ),
-  );
-
-  sl.registerFactory(
-    () => WorkoutPlanBloc(
-      repository: sl(),
-    ),
-  );
-
-  sl.registerFactory(
-    () => NutritionPlanBloc(),
   );
 
   // Features - Assessment
@@ -299,28 +325,84 @@ Future<void> init() async {
     ),
   );
 
+  // Blocs
+  sl.registerFactory(() => PendingAssessmentsBloc(memberRepository: sl()));
+  sl.registerFactoryParam<BloodPressureBloc, String, void>(
+    (memberId, _) =>
+        BloodPressureBloc(saveAssessment: sl(), memberId: memberId),
+  );
+  sl.registerFactoryParam<CardioFitnessBloc, String, void>(
+    (memberId, _) =>
+        CardioFitnessBloc(saveAssessment: sl(), memberId: memberId),
+  );
+  sl.registerFactoryParam<MuscularFlexibilityBloc, String, void>(
+    (memberId, _) =>
+        MuscularFlexibilityBloc(saveAssessment: sl(), memberId: memberId),
+  );
+  sl.registerFactoryParam<DetailedMeasurementsBloc, String, void>(
+    (memberId, _) =>
+        DetailedMeasurementsBloc(saveAssessment: sl(), memberId: memberId),
+  );
+
+  // Features - Workout
   sl.registerFactory(
-    () => BloodPressureBloc(
-      saveAssessment: sl(),
+    () => WorkoutBloc(
+      getWorkoutPlans: sl(),
+      getWorkoutPlanById: sl(),
+      getMemberWorkoutPlans: sl(),
+      createWorkoutPlan: sl(),
     ),
   );
 
-  sl.registerFactory(
-    () => CardioFitnessBloc(
-      saveAssessment: sl(),
+  // Use cases
+  sl.registerLazySingleton(() => GetWorkoutPlans(sl()));
+  sl.registerLazySingleton(() => GetWorkoutPlanById(sl()));
+  sl.registerLazySingleton(() => GetMemberWorkoutPlans(sl()));
+  sl.registerLazySingleton(() => CreateWorkoutPlan(sl()));
+
+  // Repository
+  sl.registerLazySingleton<WorkoutRepository>(
+    () => WorkoutRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+      localDataSource: sl(),
     ),
   );
 
+  // Data sources
+  sl.registerLazySingleton<WorkoutRemoteDataSource>(
+    () => WorkoutRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<WorkoutLocalDataSource>(
+    () => WorkoutLocalDataSourceImpl(),
+  );
+
+  // Nutrition
+  // Bloc
   sl.registerFactory(
-    () => MuscularFlexibilityBloc(
-      saveAssessment: sl(),
+    () => NutritionBloc(
+      repository: sl(),
     ),
   );
 
-  sl.registerFactory(
-    () => DetailedMeasurementsBloc(
-      saveAssessment: sl(),
-    ),
+  // Use cases
+  sl.registerLazySingleton(() => GetNutritionPlans(sl()));
+  sl.registerLazySingleton(() => GetMemberNutritionPlans(sl()));
+  sl.registerLazySingleton(() => GetNutritionPlanById(sl()));
+  sl.registerLazySingleton(() => CreateNutritionPlan(sl()));
+  sl.registerLazySingleton(() => DeleteNutritionPlan(sl()));
+
+  // Repository
+  sl.registerLazySingleton<NutritionRepository>(
+    () => NutritionRepositoryImpl(),
+  );
+
+  // Data sources
+  sl.registerLazySingleton<NutritionRemoteDataSource>(
+    () => NutritionRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<NutritionLocalDataSource>(
+    () => NutritionLocalDataSourceImpl(),
   );
 
   // Initialize any async dependencies here

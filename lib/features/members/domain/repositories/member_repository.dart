@@ -20,4 +20,5 @@ abstract class MemberRepository {
   });
   Future<Either<Failure, void>> addAssessment(
       String memberId, Assessment assessment);
+  Future<Either<Failure, List<Member>>> getMembersWithPendingAssessments();
 }

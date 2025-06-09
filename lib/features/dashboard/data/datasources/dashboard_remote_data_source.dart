@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:wildfit_coach/features/members/domain/entities/member.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/rest_client.dart';
 import '../../domain/entities/dashboard_data.dart';
-import '../../domain/entities/dashboard_member.dart';
+
 import '../models/dashboard_data_model.dart';
 import '../models/dashboard_member_model.dart';
-import 'package:dio/dio.dart';
 
 abstract class DashboardRemoteDataSource {
   Future<DashboardData> getDashboardData();
-  Future<List<DashboardMember>> getMembers();
-  Future<DashboardMember> getMemberDetails(String memberId);
+  Future<List<Member>> getMembers();
+  Future<Member> getMemberDetails(String memberId);
 }
 
 class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
@@ -33,7 +33,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   }
 
   @override
-  Future<List<DashboardMember>> getMembers() async {
+  Future<List<Member>> getMembers() async {
     try {
       // Load sample data from assets
       final jsonString =
@@ -49,7 +49,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   }
 
   @override
-  Future<DashboardMember> getMemberDetails(String memberId) async {
+  Future<Member> getMemberDetails(String memberId) async {
     try {
       // Load sample data from assets
       final jsonString =

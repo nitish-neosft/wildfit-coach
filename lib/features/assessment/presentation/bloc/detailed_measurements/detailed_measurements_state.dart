@@ -4,7 +4,7 @@ abstract class DetailedMeasurementsState extends Equatable {
   const DetailedMeasurementsState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class DetailedMeasurementsInitial extends DetailedMeasurementsState {}

@@ -4,7 +4,7 @@ abstract class BloodPressureEvent extends Equatable {
   const BloodPressureEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class UpdateBPCategory extends BloodPressureEvent {
@@ -19,27 +19,16 @@ class UpdateBPCategory extends BloodPressureEvent {
 class SaveBloodPressure extends BloodPressureEvent {
   final int systolic;
   final int diastolic;
-  final int pulse;
   final int restingHeartRate;
   final String bpCategory;
-  final DateTime date;
 
   const SaveBloodPressure({
     required this.systolic,
     required this.diastolic,
-    required this.pulse,
     required this.restingHeartRate,
     required this.bpCategory,
-    required this.date,
   });
 
   @override
-  List<Object> get props => [
-        systolic,
-        diastolic,
-        pulse,
-        restingHeartRate,
-        bpCategory,
-        date,
-      ];
+  List<Object> get props => [systolic, diastolic, restingHeartRate, bpCategory];
 }

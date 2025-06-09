@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../features/members/domain/entities/member.dart';
 import '../entities/dashboard_data.dart';
-import '../entities/dashboard_member.dart';
 
 abstract class DashboardRepository {
   Future<Either<Failure, DashboardData>> getDashboardData();
-  Future<Either<Failure, List<DashboardMember>>> getMembers();
-  Future<Either<Failure, DashboardMember>> getMemberDetails(String memberId);
+  Future<Either<Failure, List<Member>>> getMembers();
+  Future<Either<Failure, Member>> getMemberDetails(String memberId);
 }

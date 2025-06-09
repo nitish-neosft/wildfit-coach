@@ -1,0 +1,134 @@
+{
+  "members": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "avatar": null,
+      "joined_at": "2024-02-15T10:00:00Z",
+      "plan": "Premium",
+      "has_assessment": false,
+      "measurements": null,
+      "assessments": [],
+      "trainer_name": "Sarah Coach",
+      "membership_expiry_date": "2025-02-15T10:00:00Z",
+      "last_check_in": "2024-03-14T15:30:00Z",
+      "days_present": 25,
+      "today_activities": [],
+      "height": 175.0,
+      "weight": 75.0,
+      "body_fat": 18.5,
+      "muscle_mass": 65.0,
+      "bmi": 24.5,
+      "weight_goal": 72.0,
+      "body_fat_goal": 15.0,
+      "weekly_workout_goal": 4,
+      "check_ins": [],
+      "current_streak": 3,
+      "active_programs": 2,
+      "active_nutrition_plans": 1
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "+1987654321",
+      "avatar": null,
+      "joined_at": "2024-03-01T09:00:00Z",
+      "plan": "Basic",
+      "has_assessment": true,
+      "measurements": {
+        "chest": 88.0,
+        "waist": 70.0,
+        "hips": 92.0
+      },
+      "assessments": [
+        {
+          "id": "a1",
+          "date": "2024-03-05T14:00:00Z",
+          "type": "bloodPressure",
+          "data": {
+            "systolic": 120,
+            "diastolic": 80,
+            "heart_rate": 72,
+            "category": "Normal"
+          }
+        }
+      ],
+      "trainer_name": "Mike Trainer",
+      "membership_expiry_date": "2024-09-01T09:00:00Z",
+      "last_check_in": "2024-03-14T08:45:00Z",
+      "days_present": 12,
+      "today_activities": [],
+      "height": 165.0,
+      "weight": 60.0,
+      "body_fat": 22.0,
+      "muscle_mass": 45.0,
+      "bmi": 22.0,
+      "weight_goal": 58.0,
+      "body_fat_goal": 20.0,
+      "weekly_workout_goal": 3,
+      "check_ins": [],
+      "current_streak": 2,
+      "active_programs": 1,
+      "active_nutrition_plans": 1
+    },
+    {
+      "id": "3",
+      "name": "Mike Johnson",
+      "email": "mike@example.com",
+      "phone": "+1122334455",
+      "avatar": null,
+      "joined_at": "2024-01-15T11:00:00Z",
+      "plan": "Premium",
+      "has_assessment": true,
+      "measurements": {
+        "chest": 102.0,
+        "waist": 85.0,
+        "hips": 98.0
+      },
+      "assessments": [
+        {
+          "id": "a2",
+          "date": "2024-01-30T15:00:00Z",
+          "type": "cardioFitness",
+          "data": {
+            "vo2_max": 45.5,
+            "resting_heart_rate": 65,
+            "fitness_score": "Good",
+            "endurance_level": "Intermediate"
+          }
+        },
+        {
+          "id": "a3",
+          "date": "2024-01-30T16:00:00Z",
+          "type": "muscularFlexibility",
+          "data": {
+            "push_ups": 30,
+            "sit_ups": 25,
+            "flexibility": "good",
+            "strength_score": "Above Average"
+          }
+        }
+      ],
+      "trainer_name": "Sarah Coach",
+      "membership_expiry_date": "2025-01-15T11:00:00Z",
+      "last_check_in": "2024-03-14T17:30:00Z",
+      "days_present": 45,
+      "today_activities": [],
+      "height": 180.0,
+      "weight": 85.0,
+      "body_fat": 15.0,
+      "muscle_mass": 72.0,
+      "bmi": 26.2,
+      "weight_goal": 82.0,
+      "body_fat_goal": 12.0,
+      "weekly_workout_goal": 5,
+      "check_ins": [],
+      "current_streak": 5,
+      "active_programs": 2,
+      "active_nutrition_plans": 1
+    }
+  ]
+}

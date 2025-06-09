@@ -89,10 +89,45 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            child: ProfileHeader(
-              name: settings.name,
-              email: settings.email,
-              avatar: settings.avatar,
+            child: Column(
+              children: [
+                ProfileHeader(
+                  name: settings.name,
+                  email: settings.email,
+                  avatar: settings.avatar,
+                  role: settings.role,
+                  specialization: settings.specialization,
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: FittedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildStatCard(
+                          context,
+                          'Experience',
+                          '${settings.yearsOfExperience} Years',
+                          Icons.timeline,
+                        ),
+                        _buildStatCard(
+                          context,
+                          'Active Members',
+                          settings.activeMembers.toString(),
+                          Icons.people,
+                        ),
+                        _buildStatCard(
+                          context,
+                          'Total Members',
+                          settings.totalMembers.toString(),
+                          Icons.groups,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -102,209 +137,208 @@ class ProfilePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SettingsSection(
-                  title: 'Notifications',
+                  title: 'Professional Details',
                   children: [
-                    SwitchListTile(
-                      value: settings.notifications.checkInReminders,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders: value,
-                                  checkOutReminders:
-                                      settings.notifications.checkOutReminders,
-                                  nutritionPlanAlerts: settings
-                                      .notifications.nutritionPlanAlerts,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts:
-                                      settings.notifications.workoutPlanAlerts,
-                                  trainerAttendanceSummary: settings
-                                      .notifications.trainerAttendanceSummary,
-                                  paymentReminders:
-                                      settings.notifications.paymentReminders,
-                                ),
-                              ),
-                            );
+                    ListTile(
+                      leading: const Icon(Icons.workspace_premium),
+                      title: const Text('Certifications'),
+                      subtitle: Text(settings.certifications.join(', ')),
+                      trailing: const Icon(Icons.edit),
+                      onTap: () {
+                        // TODO: Implement certification management
                       },
-                      title: const Text('Check-in Reminders'),
                     ),
-                    SwitchListTile(
-                      value: settings.notifications.checkOutReminders,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders:
-                                      settings.notifications.checkInReminders,
-                                  checkOutReminders: value,
-                                  nutritionPlanAlerts: settings
-                                      .notifications.nutritionPlanAlerts,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts:
-                                      settings.notifications.workoutPlanAlerts,
-                                  trainerAttendanceSummary: settings
-                                      .notifications.trainerAttendanceSummary,
-                                  paymentReminders:
-                                      settings.notifications.paymentReminders,
-                                ),
-                              ),
-                            );
-                      },
-                      title: const Text('Check-out Reminders'),
+                    ListTile(
+                      leading: const Icon(Icons.schedule),
+                      title: const Text('Working Hours'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/working-hours'),
                     ),
-                    SwitchListTile(
-                      value: settings.notifications.nutritionPlanAlerts,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders:
-                                      settings.notifications.checkInReminders,
-                                  checkOutReminders:
-                                      settings.notifications.checkOutReminders,
-                                  nutritionPlanAlerts: value,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts:
-                                      settings.notifications.workoutPlanAlerts,
-                                  trainerAttendanceSummary: settings
-                                      .notifications.trainerAttendanceSummary,
-                                  paymentReminders:
-                                      settings.notifications.paymentReminders,
-                                ),
-                              ),
-                            );
-                      },
-                      title: const Text('Nutrition Plan Alerts'),
-                    ),
-                    SwitchListTile(
-                      value: settings.notifications.workoutPlanAlerts,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders:
-                                      settings.notifications.checkInReminders,
-                                  checkOutReminders:
-                                      settings.notifications.checkOutReminders,
-                                  nutritionPlanAlerts: settings
-                                      .notifications.nutritionPlanAlerts,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts: value,
-                                  trainerAttendanceSummary: settings
-                                      .notifications.trainerAttendanceSummary,
-                                  paymentReminders:
-                                      settings.notifications.paymentReminders,
-                                ),
-                              ),
-                            );
-                      },
-                      title: const Text('Workout Plan Alerts'),
-                    ),
-                    SwitchListTile(
-                      value: settings.notifications.trainerAttendanceSummary,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders:
-                                      settings.notifications.checkInReminders,
-                                  checkOutReminders:
-                                      settings.notifications.checkOutReminders,
-                                  nutritionPlanAlerts: settings
-                                      .notifications.nutritionPlanAlerts,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts:
-                                      settings.notifications.workoutPlanAlerts,
-                                  trainerAttendanceSummary: value,
-                                  paymentReminders:
-                                      settings.notifications.paymentReminders,
-                                ),
-                              ),
-                            );
-                      },
-                      title: const Text('Trainer Attendance Summary'),
-                    ),
-                    SwitchListTile(
-                      value: settings.notifications.paymentReminders,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                              UpdateNotificationSettingsEvent(
-                                NotificationSettings(
-                                  checkInReminders:
-                                      settings.notifications.checkInReminders,
-                                  checkOutReminders:
-                                      settings.notifications.checkOutReminders,
-                                  nutritionPlanAlerts: settings
-                                      .notifications.nutritionPlanAlerts,
-                                  fitnessTestReminders: settings
-                                      .notifications.fitnessTestReminders,
-                                  workoutPlanAlerts:
-                                      settings.notifications.workoutPlanAlerts,
-                                  trainerAttendanceSummary: settings
-                                      .notifications.trainerAttendanceSummary,
-                                  paymentReminders: value,
-                                ),
-                              ),
-                            );
-                      },
-                      title: const Text('Payment Reminders'),
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today),
+                      title: const Text('Schedule Management'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/schedule'),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 SettingsSection(
-                  title: 'Plans & Tests',
+                  title: 'Member Management',
                   children: [
                     ListTile(
+                      leading: const Icon(Icons.assessment),
+                      title: const Text('Assessment Templates'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/assessment-templates'),
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.fitness_center),
-                      title: const Text('Workout Plan'),
-                      subtitle: Text(
-                        settings.hasWorkoutPlan ? 'View Plan' : 'Not Assigned',
-                      ),
+                      title: const Text('Workout Templates'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        if (settings.hasWorkoutPlan) {
-                          context.push('/workout-plan/current',
-                              extra: {'memberId': settings.userId});
-                        }
-                      },
+                      onTap: () => context.push('/workout-templates'),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.restaurant_menu),
-                      title: const Text('Nutrition Plan'),
-                      subtitle: Text(
-                        settings.hasNutritionPlan
-                            ? 'View Plan'
-                            : 'Not Assigned',
-                      ),
+                      leading: const Icon(Icons.bar_chart),
+                      title: const Text('Progress Reports'),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        if (settings.hasNutritionPlan) {
-                          context.push('/nutrition-plan/current',
-                              extra: {'memberId': settings.userId});
-                        }
-                      },
+                      onTap: () => context.push('/progress-reports'),
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.monitor_heart),
-                      title: const Text('Fitness Test'),
-                      subtitle: Text(
-                        settings.hasFitnessTest
-                            ? 'View Results'
-                            : 'Not Conducted',
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        if (settings.hasFitnessTest) {
-                          context.push('/detailed-measurements',
-                              extra: {'memberId': settings.userId});
-                        }
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SettingsSection(
+                  title: 'Notifications',
+                  children: [
+                    SwitchListTile(
+                      value: settings.notifications.memberCheckInAlerts,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: value,
+                                  memberAssessmentReminders: settings
+                                      .notifications.memberAssessmentReminders,
+                                  memberProgressAlerts: settings
+                                      .notifications.memberProgressAlerts,
+                                  membershipExpiryAlerts: settings
+                                      .notifications.membershipExpiryAlerts,
+                                  newMemberAssignments: settings
+                                      .notifications.newMemberAssignments,
+                                  staffMeetingReminders: settings
+                                      .notifications.staffMeetingReminders,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
                       },
+                      title: const Text('Member Check-in Alerts'),
+                    ),
+                    SwitchListTile(
+                      value: settings.notifications.memberAssessmentReminders,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: settings
+                                      .notifications.memberCheckInAlerts,
+                                  memberAssessmentReminders: value,
+                                  memberProgressAlerts: settings
+                                      .notifications.memberProgressAlerts,
+                                  membershipExpiryAlerts: settings
+                                      .notifications.membershipExpiryAlerts,
+                                  newMemberAssignments: settings
+                                      .notifications.newMemberAssignments,
+                                  staffMeetingReminders: settings
+                                      .notifications.staffMeetingReminders,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
+                      },
+                      title: const Text('Assessment Reminders'),
+                    ),
+                    SwitchListTile(
+                      value: settings.notifications.memberProgressAlerts,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: settings
+                                      .notifications.memberCheckInAlerts,
+                                  memberAssessmentReminders: settings
+                                      .notifications.memberAssessmentReminders,
+                                  memberProgressAlerts: value,
+                                  membershipExpiryAlerts: settings
+                                      .notifications.membershipExpiryAlerts,
+                                  newMemberAssignments: settings
+                                      .notifications.newMemberAssignments,
+                                  staffMeetingReminders: settings
+                                      .notifications.staffMeetingReminders,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
+                      },
+                      title: const Text('Member Progress Alerts'),
+                    ),
+                    SwitchListTile(
+                      value: settings.notifications.membershipExpiryAlerts,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: settings
+                                      .notifications.memberCheckInAlerts,
+                                  memberAssessmentReminders: settings
+                                      .notifications.memberAssessmentReminders,
+                                  memberProgressAlerts: settings
+                                      .notifications.memberProgressAlerts,
+                                  membershipExpiryAlerts: value,
+                                  newMemberAssignments: settings
+                                      .notifications.newMemberAssignments,
+                                  staffMeetingReminders: settings
+                                      .notifications.staffMeetingReminders,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
+                      },
+                      title: const Text('Membership Expiry Alerts'),
+                    ),
+                    SwitchListTile(
+                      value: settings.notifications.newMemberAssignments,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: settings
+                                      .notifications.memberCheckInAlerts,
+                                  memberAssessmentReminders: settings
+                                      .notifications.memberAssessmentReminders,
+                                  memberProgressAlerts: settings
+                                      .notifications.memberProgressAlerts,
+                                  membershipExpiryAlerts: settings
+                                      .notifications.membershipExpiryAlerts,
+                                  newMemberAssignments: value,
+                                  staffMeetingReminders: settings
+                                      .notifications.staffMeetingReminders,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
+                      },
+                      title: const Text('New Member Assignments'),
+                    ),
+                    SwitchListTile(
+                      value: settings.notifications.staffMeetingReminders,
+                      onChanged: (value) {
+                        context.read<ProfileBloc>().add(
+                              UpdateNotificationSettingsEvent(
+                                NotificationSettings(
+                                  memberCheckInAlerts: settings
+                                      .notifications.memberCheckInAlerts,
+                                  memberAssessmentReminders: settings
+                                      .notifications.memberAssessmentReminders,
+                                  memberProgressAlerts: settings
+                                      .notifications.memberProgressAlerts,
+                                  membershipExpiryAlerts: settings
+                                      .notifications.membershipExpiryAlerts,
+                                  newMemberAssignments: settings
+                                      .notifications.newMemberAssignments,
+                                  staffMeetingReminders: value,
+                                  paymentReminders:
+                                      settings.notifications.paymentReminders,
+                                ),
+                              ),
+                            );
+                      },
+                      title: const Text('Staff Meeting Reminders'),
                     ),
                   ],
                 ),
@@ -400,6 +434,41 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+  ) {
+    return Card(
+      color: AppColors.darkCard,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: AppColors.primary),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.white.withOpacity(0.7),
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
-import '../../../../widgets/measurement_input_field.dart';
+import '../../../../core/widgets/loading_view.dart';
 import '../bloc/blood_pressure/blood_pressure_bloc.dart';
-import '../../domain/usecases/save_assessment.dart';
 
 class BloodPressureScreen extends StatefulWidget {
+  final String memberId;
   final DateTime? selectedMonth;
 
   const BloodPressureScreen({
-    super.key,
+    required this.memberId,
     this.selectedMonth,
+    super.key,
   });
 
   @override
@@ -22,44 +23,41 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
   final _formKey = GlobalKey<FormState>();
   final _systolicController = TextEditingController();
   final _diastolicController = TextEditingController();
-  final _pulseController = TextEditingController();
   final _restingHeartRateController = TextEditingController();
 
   @override
   void dispose() {
     _systolicController.dispose();
     _diastolicController.dispose();
-    _pulseController.dispose();
     _restingHeartRateController.dispose();
     super.dispose();
   }
 
-  void _handleNext() {
+  String _getBPCategory(int systolic, int diastolic) {
+    if (systolic < 120 && diastolic < 80) {
+      return 'Normal';
+    } else if (systolic < 130 && diastolic < 80) {
+      return 'Elevated';
+    } else if (systolic < 140 || diastolic < 90) {
+      return 'Stage 1 Hypertension';
+    } else {
+      return 'Stage 2 Hypertension';
+    }
+  }
+
+  void _onSave() {
     if (_formKey.currentState!.validate()) {
       final systolic = int.parse(_systolicController.text);
       final diastolic = int.parse(_diastolicController.text);
-      final pulse = int.parse(_pulseController.text);
       final restingHeartRate = int.parse(_restingHeartRateController.text);
-
-      String bpCategory;
-      if (systolic < 120 && diastolic < 80) {
-        bpCategory = 'Normal';
-      } else if (systolic < 130 && diastolic < 80) {
-        bpCategory = 'Elevated';
-      } else if (systolic < 140 || diastolic < 90) {
-        bpCategory = 'Stage 1 Hypertension';
-      } else {
-        bpCategory = 'Stage 2 Hypertension';
-      }
+      final bpCategory = _getBPCategory(systolic, diastolic);
 
       context.read<BloodPressureBloc>().add(
             SaveBloodPressure(
               systolic: systolic,
               diastolic: diastolic,
-              pulse: pulse,
               restingHeartRate: restingHeartRate,
               bpCategory: bpCategory,
-              date: widget.selectedMonth ?? DateTime.now(),
             ),
           );
     }
@@ -67,154 +65,115 @@ class _BloodPressureScreenState extends State<BloodPressureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BloodPressureBloc(
-        saveAssessment: context.read<SaveAssessment>(),
-      ),
-      child: BlocConsumer<BloodPressureBloc, BloodPressureState>(
-        listener: (context, state) {
-          if (state is BloodPressureSaved) {
-            context.pop();
-          } else if (state is BloodPressureError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Blood Pressure'),
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Blood Pressure & Heart Rate',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
+    return BlocConsumer<BloodPressureBloc, BloodPressureState>(
+      listener: (context, state) {
+        if (state is BloodPressureSaved) {
+          context.pop();
+        } else if (state is BloodPressureError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Blood Pressure Assessment'),
+          ),
+          body: state is BloodPressureSaving
+              ? const LoadingView()
+              : SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            controller: _systolicController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Systolic (mmHg)',
+                              hintText: 'Enter systolic blood pressure',
                             ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Enter your blood pressure and heart rate measurements',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.darkGrey,
-                            ),
-                      ),
-                      const SizedBox(height: 24),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.darkCard,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.darkDivider,
-                            width: 1,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter systolic blood pressure';
+                              }
+                              final systolic = int.tryParse(value);
+                              if (systolic == null ||
+                                  systolic < 70 ||
+                                  systolic > 200) {
+                                return 'Please enter a valid systolic blood pressure (70-200)';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: MeasurementInputField(
-                                    label: 'Systolic',
-                                    controller: _systolicController,
-                                    unit: 'mmHg',
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: MeasurementInputField(
-                                    label: 'Diastolic',
-                                    controller: _diastolicController,
-                                    unit: 'mmHg',
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                ),
-                              ],
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _diastolicController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Diastolic (mmHg)',
+                              hintText: 'Enter diastolic blood pressure',
                             ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: MeasurementInputField(
-                                    label: 'Pulse',
-                                    controller: _pulseController,
-                                    unit: 'bpm',
-                                    textInputAction: TextInputAction.next,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: MeasurementInputField(
-                                    label: 'Resting Heart Rate',
-                                    controller: _restingHeartRateController,
-                                    unit: 'bpm',
-                                    textInputAction: TextInputAction.done,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 48),
-                      ElevatedButton(
-                        onPressed:
-                            state is! BloodPressureSaving ? _handleNext : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.white,
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter diastolic blood pressure';
+                              }
+                              final diastolic = int.tryParse(value);
+                              if (diastolic == null ||
+                                  diastolic < 40 ||
+                                  diastolic > 130) {
+                                return 'Please enter a valid diastolic blood pressure (40-130)';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (state is BloodPressureSaving) ...[
-                              const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.white,
-                                  strokeWidth: 2,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                            ],
-                            const Text(
-                              'Continue',
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: _restingHeartRateController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Resting Heart Rate (bpm)',
+                              hintText: 'Enter resting heart rate',
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter resting heart rate';
+                              }
+                              final restingHeartRate = int.tryParse(value);
+                              if (restingHeartRate == null ||
+                                  restingHeartRate < 40 ||
+                                  restingHeartRate > 200) {
+                                return 'Please enter a valid resting heart rate (40-200)';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: _onSave,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: const Text(
+                              'Save Assessment',
                               style: TextStyle(
+                                color: Colors.white,
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            if (state is! BloodPressureSaving) ...[
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward),
-                            ],
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
+        );
+      },
     );
   }
 }

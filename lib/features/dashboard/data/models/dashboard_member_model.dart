@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/entities/dashboard_member.dart';
+import '../../../../features/members/domain/entities/member.dart';
 
 part 'dashboard_member_model.g.dart';
 
@@ -113,14 +113,14 @@ class DashboardMemberModel {
         'measurements': measurements,
       };
 
-  DashboardMember toEntity() => DashboardMember(
+  Member toEntity() => Member(
         id: id,
         name: name,
         avatar: avatar,
         plan: plan,
         progress: progress,
         nextSession: nextSession,
-        streakDays: streakDays,
+        currentStreak: streakDays,
         lastActivity: lastActivity,
         activityTime: activityTime,
         email: email,
@@ -130,10 +130,9 @@ class DashboardMemberModel {
         bodyFat: bodyFat,
         muscleMass: muscleMass,
         bmi: bmi,
-        lastAssessment: lastAssessment,
         trainerName: trainerName,
-        membershipExpiry: membershipExpiry,
-        lastCheckin: lastCheckin,
+        membershipExpiryDate: membershipExpiry,
+        lastCheckIn: lastCheckin,
         daysPresent: daysPresent,
         weeklyWorkoutGoal: weeklyWorkoutGoal,
         measurements: measurements,

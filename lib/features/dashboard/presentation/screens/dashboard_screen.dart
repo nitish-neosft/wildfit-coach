@@ -5,12 +5,14 @@ import '../../../../core/di/injection_container.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../members/domain/entities/member.dart';
 import '../bloc/dashboard_bloc.dart';
-import '../widgets/stats_card.dart';
-import '../widgets/member_card.dart';
-import '../widgets/quick_action_card.dart';
+import '../widgets/modern_stats_card.dart';
+import '../widgets/modern_member_card.dart';
+import '../widgets/modern_quick_action_card.dart';
 import '../widgets/activity_timeline.dart';
 import '../widgets/network_image.dart';
+import '../../../notifications/presentation/bloc/notification_bloc.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -64,7 +66,7 @@ class DashboardScreen extends StatelessWidget {
                       final data = state.data;
                       return Scaffold(
                         appBar: AppBar(
-                          backgroundColor: AppColors.darkBackground,
+                          backgroundColor: Colors.transparent,
                           elevation: 0,
                           title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,32 +93,56 @@ class DashboardScreen extends StatelessWidget {
                             ],
                           ),
                           actions: [
-                            IconButton(
-                              icon: Stack(
-                                children: [
-                                  const Icon(
-                                    Icons.notifications_outlined,
-                                    color: AppColors.white,
-                                  ),
-                                  if (data.activities.isNotEmpty)
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: AppColors.error,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        constraints: const BoxConstraints(
-                                          minWidth: 8,
-                                          minHeight: 8,
+                            BlocBuilder<NotificationBloc, NotificationState>(
+                              builder: (context, state) {
+                                int unreadCount = 0;
+                                if (state is NotificationLoaded) {
+                                  unreadCount = state.notifications
+                                      .where((notification) =>
+                                          !notification.isRead)
+                                      .length;
+                                }
+
+                                return Stack(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.notifications,
+                                        color: AppColors.white,
+                                      ),
+                                      onPressed: () =>
+                                          context.push('/notifications'),
+                                    ),
+                                    if (unreadCount > 0)
+                                      Positioned(
+                                        right: 8,
+                                        top: 8,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          constraints: const BoxConstraints(
+                                            minWidth: 16,
+                                            minHeight: 16,
+                                          ),
+                                          child: Text(
+                                            unreadCount > 99
+                                                ? '99+'
+                                                : unreadCount.toString(),
+                                            style: const TextStyle(
+                                              color: AppColors.white,
+                                              fontSize: 10,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                ],
-                              ),
-                              onPressed: () => context.push('/notifications'),
+                                  ],
+                                );
+                              },
                             ),
                             Padding(
                               padding:
@@ -134,100 +160,161 @@ class DashboardScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        body: SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                        body: RefreshIndicator(
+                          onRefresh: () async {
+                            context.read<DashboardBloc>().add(LoadDashboard());
+                          },
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                StatsCard(stats: data.stats),
                                 const SizedBox(height: 24),
-                                Text(
-                                  'Recent Members',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: AppColors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                ModernStatsCard(stats: data.stats),
+                                const SizedBox(height: 32),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Text(
+                                    'Recent Members',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: AppColors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
                                 SizedBox(
-                                  height: 160,
+                                  height: 180,
                                   child: ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16),
                                     scrollDirection: Axis.horizontal,
                                     itemCount: data.members.length,
                                     itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 16),
-                                        child: MemberCard(
-                                          member: data.members[index],
-                                        ),
+                                      final dashboardMember =
+                                          data.members[index];
+                                      final member = Member(
+                                        id: dashboardMember.id,
+                                        name: dashboardMember.name,
+                                        email: dashboardMember.email,
+                                        avatar: dashboardMember.avatar,
+                                        joinedAt: dashboardMember.joinedAt,
+                                        plan: dashboardMember.plan,
+                                        membershipExpiryDate: dashboardMember
+                                            .membershipExpiryDate,
+                                        height: dashboardMember.height,
+                                        weight: dashboardMember.weight,
+                                        bodyFat: dashboardMember.bodyFat,
+                                        muscleMass: dashboardMember.muscleMass,
+                                        bmi: dashboardMember.bmi,
+                                        trainerName:
+                                            dashboardMember.trainerName,
+                                        lastCheckIn:
+                                            dashboardMember.lastCheckIn,
+                                        daysPresent:
+                                            dashboardMember.daysPresent,
+                                        weeklyWorkoutGoal:
+                                            dashboardMember.weeklyWorkoutGoal,
+                                        measurements:
+                                            dashboardMember.measurements,
+                                        currentStreak:
+                                            dashboardMember.currentStreak,
+                                      );
+                                      return ModernMemberCard(
+                                        member: member,
                                       );
                                     },
                                   ),
                                 ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  'Quick Actions',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: AppColors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                const SizedBox(height: 32),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Text(
+                                    'Quick Actions',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: AppColors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
-                                GridView.count(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 16,
-                                  crossAxisSpacing: 16,
-                                  children: [
-                                    QuickActionCard(
-                                      icon: Icons.assessment,
-                                      title: 'New Assessment',
-                                      onTap: () =>
-                                          context.push('/assessment/new'),
-                                    ),
-                                    QuickActionCard(
-                                      icon: Icons.fitness_center,
-                                      title: 'Workouts',
-                                      onTap: () => context.push('/workouts'),
-                                    ),
-                                    QuickActionCard(
-                                      icon: Icons.restaurant_menu,
-                                      title: 'Meal Planning',
-                                      onTap: () =>
-                                          context.push('/nutrition/plan'),
-                                    ),
-                                    QuickActionCard(
-                                      icon: Icons.calendar_today,
-                                      title: 'Schedule Session',
-                                      onTap: () =>
-                                          context.push('/schedule/new'),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  'Recent Activity',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: AppColors.white,
-                                        fontWeight: FontWeight.bold,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: GridView.count(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 16,
+                                    crossAxisSpacing: 16,
+                                    children: [
+                                      ModernQuickActionCard(
+                                        icon: Icons.assessment,
+                                        title: 'New Assessment',
+                                        color: AppColors.success,
+                                        onTap: () =>
+                                            context.push('/assessment/pending'),
                                       ),
+                                      ModernQuickActionCard(
+                                        icon: Icons.fitness_center,
+                                        title: 'Workouts',
+                                        color: AppColors.warning,
+                                        onTap: () => context.push('/workouts'),
+                                      ),
+                                      ModernQuickActionCard(
+                                        icon: Icons.restaurant_menu,
+                                        title: 'Meal Planning',
+                                        color: AppColors.info,
+                                        onTap: () =>
+                                            context.push('/nutrition/plan'),
+                                      ),
+                                      ModernQuickActionCard(
+                                        icon: Icons.calendar_today,
+                                        title: 'Schedule Session',
+                                        color: AppColors.accent,
+                                        onTap: () =>
+                                            context.push('/schedule/new'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Text(
+                                    'Recent Activity',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: AppColors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
-                                ActivityTimeline(
-                                  activities: data.activities,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.4,
+                                    child: ActivityTimeline(
+                                      activities: data.activities,
+                                    ),
+                                  ),
                                 ),
+                                const SizedBox(height: 24),
                               ],
                             ),
                           ),

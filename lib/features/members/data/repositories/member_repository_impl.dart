@@ -6,6 +6,8 @@ import '../../domain/entities/member.dart';
 import '../../domain/entities/assessment.dart';
 import '../../domain/repositories/member_repository.dart';
 import '../datasources/member_remote_data_source.dart';
+import '../models/member_model.dart';
+import '../models/assessment_model.dart' as assessment_model;
 
 class MemberRepositoryImpl implements MemberRepository {
   final MemberRemoteDataSource remoteDataSource;
@@ -40,18 +42,10 @@ class MemberRepositoryImpl implements MemberRepository {
   Future<Either<Failure, Member>> getMember(String id) async {
     if (await networkInfo.isConnected) {
       try {
-        final member = await remoteDataSource.getMember(id);
-        return Right(member);
-      } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(e.message));
-      } on NotFoundException catch (e) {
-        return Left(NotFoundFailure(e.message));
-      } on NetworkException catch (e) {
-        return Left(NetworkFailure(e.message));
+        final remoteMember = await remoteDataSource.getMember(id);
+        return Right(remoteMember);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
-      } catch (e) {
-        return Left(ServerFailure('An unexpected error occurred'));
       }
     } else {
       return const Left(NetworkFailure('No internet connection'));
@@ -62,80 +56,38 @@ class MemberRepositoryImpl implements MemberRepository {
   Future<Either<Failure, void>> updateMember(Member member) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.updateMember(member);
+        final memberModel = MemberModel.fromEntity(member);
+        await remoteDataSource.updateMember(memberModel);
+
         return const Right(null);
-      } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(e.message));
-      } on NetworkException catch (e) {
-        return Left(NetworkFailure(e.message));
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
-      } catch (e) {
-        return Left(ServerFailure('An unexpected error occurred'));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return Left(NetworkFailure('No internet connection'));
     }
   }
 
   @override
   Future<Either<Failure, void>> addAssessment(
-      String memberId, Assessment assessment) async {
+    String memberId,
+    Assessment assessment,
+  ) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.addAssessment(memberId, assessment);
+        final assessmentModel = assessment_model.AssessmentModel(
+          id: assessment.id,
+          date: assessment.date,
+          type: assessment.type,
+          data: assessment.data,
+        );
+        await remoteDataSource.addAssessment(memberId, assessmentModel);
         return const Right(null);
-      } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(e.message));
-      } on NetworkException catch (e) {
-        return Left(NetworkFailure(e.message));
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
-      } catch (e) {
-        return Left(ServerFailure('An unexpected error occurred'));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Member>> createMember(Member member) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final createdMember = await remoteDataSource.createMember(member);
-        return Right(createdMember);
-      } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(e.message));
-      } on NetworkException catch (e) {
-        return Left(NetworkFailure(e.message));
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      } catch (e) {
-        return Left(ServerFailure('An unexpected error occurred'));
-      }
-    } else {
-      return const Left(NetworkFailure('No internet connection'));
-    }
-  }
-
-  @override
-  Future<Either<Failure, void>> deleteMember(String id) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await remoteDataSource.deleteMember(id);
-        return const Right(null);
-      } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(e.message));
-      } on NetworkException catch (e) {
-        return Left(NetworkFailure(e.message));
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      } catch (e) {
-        return Left(ServerFailure('An unexpected error occurred'));
-      }
-    } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return Left(NetworkFailure('No internet connection'));
     }
   }
 
@@ -204,6 +156,55 @@ class MemberRepositoryImpl implements MemberRepository {
         return Left(ServerFailure(e.message));
       } catch (e) {
         return Left(ServerFailure('An unexpected error occurred'));
+      }
+    } else {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Member>> createMember(Member member) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final memberModel = MemberModel.fromEntity(member);
+        final createdMember = await remoteDataSource.createMember(memberModel);
+
+        return Right(createdMember);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      }
+    } else {
+      return Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteMember(String id) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.deleteMember(id);
+
+        return const Right(null);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      }
+    } else {
+      return Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Member>>>
+      getMembersWithPendingAssessments() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final memberModels =
+            await remoteDataSource.getMembersWithPendingAssessments();
+        return Right(memberModels.map((model) => model.toEntity()).toList());
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(NetworkFailure('No internet connection'));

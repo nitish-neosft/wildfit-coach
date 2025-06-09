@@ -1,39 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wildfit_coach/features/members/domain/repositories/member_repository.dart';
+import 'package:wildfit_coach/features/auth/presentation/bloc/auth_event.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/router.dart';
+import 'core/services/notification_service.dart';
+import 'features/notifications/presentation/bloc/notification_bloc.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/data/services/user_service.dart';
-import 'features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'core/di/injection_container.dart' as di;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Need to ensure Firebase is initialized here as well
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('Handling background message: ${message.messageId}');
+  // TODO: Handle background message
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize dependency injection
   await di.init();
 
-  // Initialize services
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Initialize shared preferences and services
   final prefs = await SharedPreferences.getInstance();
   final userService = UserService(prefs);
 
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  // Set system UI overlay style
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
+  // Initialize notification service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
 
   runApp(MyApp(userService: userService));
 }
@@ -51,20 +56,26 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => di.sl<AuthBloc>(),
+          create: (context) =>
+              di.sl<AuthBloc>()..add(CheckAuthStatusRequested()),
         ),
-        BlocProvider<DashboardBloc>(
-          create: (context) => di.sl<DashboardBloc>(),
-        ),
-        RepositoryProvider<MemberRepository>(
-          create: (context) => di.sl<MemberRepository>(),
+        BlocProvider<NotificationBloc>(
+          create: (context) =>
+              di.sl<NotificationBloc>()..add(LoadNotifications()),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'WildFit',
-        theme: AppTheme.darkTheme,
-        routerConfig: createRouter(userService),
-        debugShowCheckedModeBanner: false,
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return MaterialApp.router(
+            title: 'WildFit Coach',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.darkTheme,
+            routerConfig: createRouter(userService),
+          );
+        },
       ),
     );
   }
