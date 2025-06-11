@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/config/app_config.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -34,6 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
     }
+  }
+
+  void _handleMockLogin() {
+    _emailController.text = AppConfig.mockCredentials['email']!;
+    _passwordController.text = AppConfig.mockCredentials['password']!;
+    _handleLogin();
   }
 
   @override
@@ -78,6 +85,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (AppConfig.useMockLogin) ...[
+                    const SizedBox(height: 16),
+                    OutlinedButton(
+                      onPressed: _handleMockLogin,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Quick Login (Dev Mode)',
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 48),
                   TextFormField(
                     controller: _emailController,

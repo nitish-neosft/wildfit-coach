@@ -6,6 +6,7 @@ import '../../features/auth/data/models/user_model.dart';
 import '../../features/dashboard/data/models/dashboard_data_model.dart';
 import '../../features/profile/data/models/profile_settings_model.dart';
 import '../../features/assessment/data/models/user_assessment_model.dart';
+import '../../features/schedule/data/models/session_model.dart';
 import 'api_endpoints.dart';
 
 part 'rest_client.g.dart';
@@ -128,4 +129,22 @@ abstract class RestClient {
 
   @GET('/members/pending-assessments')
   Future<List<MemberModel>> getMembersWithPendingAssessments();
+
+  @GET('/sessions/today')
+  Future<List<SessionModel>> getTodaySessions();
+
+  @POST('/sessions')
+  Future<SessionModel> createSession(@Body() Map<String, dynamic> session);
+
+  @PUT('/sessions/{id}')
+  Future<void> updateSession(
+    @Path('id') String id,
+    @Body() Map<String, dynamic> session,
+  );
+
+  @DELETE('/sessions/{id}')
+  Future<void> deleteSession(@Path('id') String id);
+
+  @POST('/sessions/{id}/complete')
+  Future<void> completeSession(@Path('id') String id);
 }

@@ -45,10 +45,12 @@ class AuthRepositoryImpl implements AuthRepository {
     String name,
     String email,
     String password,
+    String confirmPassword,
   ) async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.register(name, email, password);
+        final user = await remoteDataSource.register(
+            name, email, password, confirmPassword);
         await localDataSource.saveUser(user);
         return Right(user);
       } on BadRequestException catch (e) {

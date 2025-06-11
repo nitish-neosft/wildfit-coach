@@ -1,11 +1,13 @@
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/rest_client.dart';
+import '../../../../core/config/app_config.dart';
 import '../models/user_model.dart';
 import 'package:dio/dio.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> login(String email, String password);
-  Future<UserModel> register(String name, String email, String password);
+  Future<UserModel> register(
+      String name, String email, String password, String cofirmPassword);
   Future<UserModel> refreshToken();
   Future<bool> resetPassword(String email);
 }
@@ -18,6 +20,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> login(String email, String password) async {
     try {
+      // Handle mock login in development mode
+      if (AppConfig.useMockLogin &&
+          email == AppConfig.mockCredentials['email'] &&
+          password == AppConfig.mockCredentials['password']) {
+        return UserModel(
+          id: 'mock-user-id',
+          name: 'Test User',
+          email: email,
+          joinedAt: DateTime.now(),
+          role: 'user',
+          hasCompletedOnboarding: true,
+        );
+      }
+
       return await _client.login({
         'email': email,
         'password': password,
@@ -36,12 +52,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String name, String email, String password) async {
+  Future<UserModel> register(
+      String name, String email, String password, String cofirmPassword) async {
     try {
       return await _client.register({
         'name': name,
         'email': email,
         'password': password,
+        "confirm_password": cofirmPassword,
       });
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {

@@ -43,12 +43,9 @@ class WorkoutPlanDetailScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Start workout session
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Starting workout session...'),
-              duration: Duration(seconds: 2),
-            ),
+          context.push(
+            '/workout-plans/${workoutPlan.id}/workout-session',
+            extra: {'plan': workoutPlan},
           );
         },
         icon: const Icon(Icons.fitness_center),

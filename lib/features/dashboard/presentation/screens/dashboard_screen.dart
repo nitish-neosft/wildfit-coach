@@ -275,14 +275,14 @@ class DashboardScreen extends StatelessWidget {
                                         title: 'Meal Planning',
                                         color: AppColors.info,
                                         onTap: () =>
-                                            context.push('/nutrition/plan'),
+                                            context.push('/nutrition/pending'),
                                       ),
                                       ModernQuickActionCard(
                                         icon: Icons.calendar_today,
                                         title: 'Schedule Session',
                                         color: AppColors.accent,
                                         onTap: () =>
-                                            context.push('/schedule/new'),
+                                            context.push('/schedule-session'),
                                       ),
                                     ],
                                   ),

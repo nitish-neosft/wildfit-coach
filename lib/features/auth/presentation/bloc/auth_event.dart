@@ -24,11 +24,13 @@ class RegisterRequested extends AuthEvent {
   final String name;
   final String email;
   final String password;
+  final String confirmPassword;
 
   const RegisterRequested({
     required this.name,
     required this.email,
     required this.password,
+    required this.confirmPassword,
   });
 
   @override

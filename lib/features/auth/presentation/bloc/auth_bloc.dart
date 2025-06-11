@@ -64,7 +64,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await _register(event.name, event.email, event.password);
+    final result = await _register(
+        event.name, event.email, event.password, event.confirmPassword);
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(Authenticated(user)),

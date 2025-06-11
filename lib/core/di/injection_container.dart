@@ -87,9 +87,16 @@ import '../../features/nutrition/domain/usecases/create_nutrition_plan.dart';
 import '../../features/nutrition/domain/usecases/delete_nutrition_plan.dart';
 import '../../features/nutrition/presentation/bloc/nutrition_bloc.dart';
 import '../../features/nutrition/data/datasources/nutrition_local_data_source.dart';
-import '../../features/nutrition/data/datasources/nutrition_remote_data_source.dart';
-
 import '../../features/assessment/presentation/bloc/pending_assessments/pending_assessments_bloc.dart';
+import '../../features/schedule/presentation/bloc/schedule_session_bloc.dart';
+import '../../features/schedule/data/datasources/session_remote_data_source.dart';
+import '../../features/schedule/data/repositories/session_repository_impl.dart';
+import '../../features/schedule/domain/repositories/session_repository.dart';
+import '../../features/schedule/presentation/bloc/today_sessions_bloc.dart';
+
+import '../../features/progress/domain/repositories/progress_repository.dart';
+import '../../features/progress/data/repositories/progress_repository_impl.dart';
+import '../../features/progress/presentation/bloc/progress_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -394,7 +401,9 @@ Future<void> init() async {
 
   // Repository
   sl.registerLazySingleton<NutritionRepository>(
-    () => NutritionRepositoryImpl(),
+    () => NutritionRepositoryImpl(
+      memberRepository: sl(),
+    ),
   );
 
   // Data sources
@@ -403,6 +412,37 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<NutritionLocalDataSource>(
     () => NutritionLocalDataSourceImpl(),
+  );
+
+  // Schedule Feature
+  // Data sources
+  sl.registerLazySingleton<SessionRemoteDataSource>(
+    () => SessionRemoteDataSourceImpl(
+      client: sl(),
+    ),
+  );
+
+  // Repository
+  sl.registerLazySingleton<SessionRepository>(
+    () => SessionRepositoryImpl(
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
+  );
+
+  // Blocs
+  sl.registerFactory(() => ScheduleSessionBloc());
+  sl.registerFactory(
+    () => TodaySessionsBloc(sessionRepository: sl()),
+  );
+
+  // Progress Feature
+  sl.registerLazySingleton<ProgressRepository>(
+    () => ProgressRepositoryImpl(),
+  );
+
+  sl.registerFactory(
+    () => ProgressBloc(repository: sl()),
   );
 
   // Initialize any async dependencies here

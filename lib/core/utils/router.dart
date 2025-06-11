@@ -26,7 +26,6 @@ import '../../features/workout/presentation/bloc/workout_bloc.dart';
 import '../../features/workout/domain/entities/workout_plan.dart';
 import '../../features/workout/presentation/screens/workout_plan_detail_screen.dart';
 import '../../features/nutrition/presentation/screens/nutrition_plans_screen.dart';
-import '../../features/nutrition/presentation/screens/nutrition_plan_form_screen.dart';
 import '../../features/nutrition/presentation/screens/nutrition_plan_detail_screen.dart';
 import '../../features/nutrition/presentation/bloc/nutrition_bloc.dart';
 import '../../features/nutrition/domain/entities/nutrition_plan.dart';
@@ -38,9 +37,17 @@ import '../../features/workout/presentation/screens/workouts_overview_screen.dar
 import '../../features/nutrition/presentation/screens/nutrition_overview_screen.dart';
 import '../../features/nutrition/presentation/screens/nutrition_plan_edit_screen.dart';
 import '../../features/nutrition/data/repositories/nutrition_repository_impl.dart';
+import '../../features/schedule/presentation/screens/schedule_session_screen.dart';
+import '../../features/nutrition/presentation/screens/pending_nutrition_plans_screen.dart';
+import '../../features/schedule/presentation/screens/today_sessions_screen.dart';
+import '../../features/progress/presentation/screens/progress_report_screen.dart';
+import '../../features/progress/presentation/bloc/progress_bloc.dart';
+import '../../features/workout/presentation/screens/workout_session_screen.dart';
 
 GoRouter createRouter(UserService userService) {
-  final nutritionRepository = NutritionRepositoryImpl();
+  final nutritionRepository = NutritionRepositoryImpl(
+    memberRepository: di.sl(),
+  );
 
   return GoRouter(
     initialLocation: '/splash',
@@ -159,6 +166,15 @@ GoRouter createRouter(UserService userService) {
         },
       ),
       GoRoute(
+        path: '/workout-plans/:id/workout-session',
+        builder: (context, state) {
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>;
+          final workoutPlan = extra['plan'] as WorkoutPlan;
+          return WorkoutSessionScreen(workoutPlan: workoutPlan);
+        },
+      ),
+      GoRoute(
         path: '/assessment/new',
         builder: (context, state) => BlocProvider(
           create: (context) => di.sl<DetailedMeasurementsBloc>(
@@ -225,19 +241,6 @@ GoRouter createRouter(UserService userService) {
                 di.sl<DetailedMeasurementsBloc>(param1: memberId),
             child: DetailedMeasurementsScreen(
                 memberId: state.pathParameters['memberId'] ?? ''),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/schedule/new',
-        builder: (context, state) {
-          return const Scaffold(
-            body: Center(
-              child: Text(
-                'Schedule Screen - Coming Soon',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
           );
         },
       ),
@@ -309,16 +312,7 @@ GoRouter createRouter(UserService userService) {
       ),
       GoRoute(
         path: '/schedule',
-        builder: (context, state) {
-          return const Scaffold(
-            body: Center(
-              child: Text(
-                'Schedule Management - Coming Soon',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          );
-        },
+        builder: (context, state) => const TodaySessionsScreen(),
       ),
       GoRoute(
         path: '/assessment-templates',
@@ -340,19 +334,6 @@ GoRouter createRouter(UserService userService) {
             body: Center(
               child: Text(
                 'Workout Templates - Coming Soon',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          );
-        },
-      ),
-      GoRoute(
-        path: '/progress-reports',
-        builder: (context, state) {
-          return const Scaffold(
-            body: Center(
-              child: Text(
-                'Progress Reports - Coming Soon',
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -417,15 +398,42 @@ GoRouter createRouter(UserService userService) {
           child: const WorkoutsOverviewScreen(),
         ),
       ),
+      // GoRoute(
+      //   path: '/nutrition/plan',
+      //   builder: (context, state) => const Scaffold(
+      //     body: Center(
+      //       child: Text(
+      //         'Nutrition Planning Overview - Coming Soon',
+      //         style: TextStyle(color: Colors.white),
+      //       ),
+      //     ),
+      //   ),
+      // ),
       GoRoute(
-        path: '/nutrition/plan',
-        builder: (context, state) => const Scaffold(
-          body: Center(
-            child: Text(
-              'Nutrition Planning Overview - Coming Soon',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+        path: '/schedule-session',
+        builder: (context, state) => const ScheduleSessionScreen(),
+      ),
+      GoRoute(
+        path: '/nutrition/pending',
+        builder: (context, state) => BlocProvider(
+          create: (context) => di.sl<NutritionBloc>(),
+          child: const PendingNutritionPlansScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/progress',
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              di.sl<ProgressBloc>()..add(LoadAllClientsProgress()),
+          child: const ProgressReportScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/progress/:id',
+        builder: (context, state) => BlocProvider(
+          create: (context) => di.sl<ProgressBloc>()
+            ..add(LoadClientProgress(state.pathParameters['id']!)),
+          child: ProgressReportScreen(memberId: state.pathParameters['id']),
         ),
       ),
     ],

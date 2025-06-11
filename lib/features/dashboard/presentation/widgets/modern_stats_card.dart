@@ -107,7 +107,7 @@ class ModernStatsCard extends StatelessWidget {
                 context.push('/schedule');
                 break;
               case 'Client Progress':
-                context.push('/progress-reports');
+                context.push('/progress');
                 break;
             }
           },

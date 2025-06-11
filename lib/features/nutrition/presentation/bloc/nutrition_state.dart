@@ -48,3 +48,25 @@ class NutritionError extends NutritionState {
   @override
   List<Object> get props => [message];
 }
+
+class MembersNeedingPlansLoaded extends NutritionState {
+  final List<MemberNutritionStatus> members;
+
+  const MembersNeedingPlansLoaded({required this.members});
+
+  @override
+  List<Object> get props => [members];
+}
+
+class NutritionPlanAssigned extends NutritionState {
+  final String memberId;
+  final String planId;
+
+  const NutritionPlanAssigned({
+    required this.memberId,
+    required this.planId,
+  });
+
+  @override
+  List<Object> get props => [memberId, planId];
+}

@@ -1,5 +1,6 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://localhost:3000/v1'; // Development URL
+  static const String baseUrl =
+      'https://massive-diverse-dane.ngrok-free.app/api'; // Development URL
 
   // Auth endpoints
   static const String login = '/auth/login';

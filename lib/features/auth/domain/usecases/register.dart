@@ -9,7 +9,7 @@ class Register {
   Register(this.repository);
 
   Future<Either<Failure, User>> call(
-      String name, String email, String password) {
-    return repository.register(name, email, password);
+      String name, String email, String password, String confirmPassword) {
+    return repository.register(name, email, password, confirmPassword);
   }
 }

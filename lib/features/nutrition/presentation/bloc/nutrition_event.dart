@@ -50,3 +50,20 @@ class DeleteNutritionPlanEvent extends NutritionEvent {
   @override
   List<Object> get props => [planId, memberId];
 }
+
+class LoadMembersNeedingPlans extends NutritionEvent {
+  const LoadMembersNeedingPlans();
+}
+
+class AssignNutritionPlanToMember extends NutritionEvent {
+  final String memberId;
+  final String planId;
+
+  const AssignNutritionPlanToMember({
+    required this.memberId,
+    required this.planId,
+  });
+
+  @override
+  List<Object> get props => [memberId, planId];
+}

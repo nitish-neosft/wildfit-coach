@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/nutrition_plan.dart';
+import '../../domain/entities/member_nutrition_status.dart';
 import '../../domain/repositories/nutrition_repository.dart';
 
 part 'nutrition_event.dart';
@@ -15,6 +16,8 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
     on<LoadNutritionPlanById>(_onLoadNutritionPlanById);
     on<CreateNewNutritionPlan>(_onCreateNutritionPlan);
     on<DeleteNutritionPlanEvent>(_onDeleteNutritionPlan);
+    on<LoadMembersNeedingPlans>(_onLoadMembersNeedingPlans);
+    on<AssignNutritionPlanToMember>(_onAssignNutritionPlanToMember);
   }
 
   Future<void> _onLoadNutritionPlans(
@@ -85,6 +88,36 @@ class NutritionBloc extends Bloc<NutritionEvent, NutritionState> {
       emit(NutritionPlanDeleted());
       final plans = await repository.getMemberNutritionPlans(event.memberId);
       emit(NutritionPlansLoaded(plans: plans));
+    } catch (e) {
+      emit(NutritionError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onLoadMembersNeedingPlans(
+    LoadMembersNeedingPlans event,
+    Emitter<NutritionState> emit,
+  ) async {
+    try {
+      emit(NutritionLoading());
+      final members = await repository.getMembersNeedingPlans();
+      emit(MembersNeedingPlansLoaded(members: members));
+    } catch (e) {
+      emit(NutritionError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onAssignNutritionPlanToMember(
+    AssignNutritionPlanToMember event,
+    Emitter<NutritionState> emit,
+  ) async {
+    try {
+      emit(NutritionLoading());
+      await repository.assignNutritionPlan(event.planId, event.memberId);
+      emit(NutritionPlanAssigned(
+        memberId: event.memberId,
+        planId: event.planId,
+      ));
+      add(const LoadMembersNeedingPlans());
     } catch (e) {
       emit(NutritionError(message: e.toString()));
     }
